@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekapitulasi - Lost & Found</title>
+    <link rel="stylesheet" href="../css/PBL.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <nav class="navbar shadow-md">
+        <div class="container">
+            <a href="PBL.html" class="logo">LOST n FOUND</a>
+            <ul class="nav-links">
+                <li><a href="PBL.html">Beranda</a></li>
+                <li><a href="daftar-laporan.html">Daftar Laporan</a></li>
+                <li><a href="lapor.html">Buat Laporan</a></li>
+                <li><a href="rekap.html" class="text-[#cdbc0b]">Rekap Data</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="flex-grow pt-28 pb-10">
+        <div class="container mx-auto max-w-4xl text-center">
+            <h2 class="text-3xl font-bold text-[#050560] mb-2">Rekapitulasi Kasus Penyelesaian</h2>
+            <p class="text-gray-500 mb-10">Statistik barang hilang dan ditemukan yang tercatat di sistem saat ini.</p>
+            
+            <div class="flex flex-wrap justify-center gap-6">
+                <div class="bg-white border-t-4 border-red-500 rounded-xl p-8 shadow-lg w-full md:w-64 transform hover:scale-105 transition">
+                    <h3 id="totalHilang" class="text-5xl font-extrabold text-red-500 mb-2">0</h3>
+                    <p class="text-slate-600 font-bold">Total Barang Hilang</p>
+                </div>
+                
+                <div class="bg-white border-t-4 border-green-500 rounded-xl p-8 shadow-lg w-full md:w-64 transform hover:scale-105 transition">
+                    <h3 id="totalDitemukan" class="text-5xl font-extrabold text-green-500 mb-2">0</h3>
+                    <p class="text-slate-600 font-bold">Total Barang Ditemukan</p>
+                </div>
+                
+                <div class="bg-[#030c3b] rounded-xl p-8 shadow-lg w-full md:w-64 transform hover:scale-105 transition">
+                    <h3 id="totalSelesai" class="text-5xl font-extrabold text-[#cdbc0b] mb-2">0</h3>
+                    <p class="text-white font-bold">Kasus Selesai / Ditutup</p>
+                </div>
+            </div>
+            
+            <div class="mt-12">
+                <button onclick="window.print()" class="bg-[#050560] hover:bg-[#cdbc0b] hover:text-[#050560] text-white font-bold py-3 px-8 rounded-full shadow-lg transition">🖨️ Cetak Laporan (PDF)</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Muhammad Yusuf Fauzi dan Fitra Luqmanul Safa. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="../js/PBL.js"></script>
+</body>
+</html>

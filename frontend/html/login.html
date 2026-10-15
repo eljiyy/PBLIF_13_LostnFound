@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Portal Keamanan Kampus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#091719] flex justify-center items-center h-screen font-sans">
+
+    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="text-center mb-6">
+            <h2 class="text-[#0f2b2e] text-3xl font-bold">LostnFound Portal</h2>
+            <p class="text-slate-500 text-sm mt-1">Sistem Verifikasi Barang Hilang & Temuan Kampus</p>
+        </div>
+        
+        <div id="errorMsg" class="hidden bg-red-100 text-red-600 border border-red-500 p-3 rounded-lg mb-5 text-center text-sm font-bold">
+            NIM/Username atau Kata Sandi salah!
+        </div>
+
+        <form onsubmit="login(event)" class="flex flex-col gap-4">
+            <div>
+                <label class="text-sm font-bold text-slate-800 block mb-1">NIM / ID Petugas</label>
+                <input type="text" id="nim" placeholder="Ketik 'admin' untuk akses panel admin" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-[#0f2b2e] transition">
+            </div>
+            <div>
+                <label class="text-sm font-bold text-slate-800 block mb-1">Kata Sandi</label>
+                <input type="password" id="password" placeholder="********" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-[#0f2b2e] transition">
+            </div>
+            <button type="submit" class="w-full p-3 mt-2 bg-[#0f2b2e] hover:bg-[#1a4d52] text-white rounded-lg font-bold transition shadow-lg">Masuk Sistem</button>
+        </form>
+    </div>
+
+    <script src="../js/PBL.js"></script>
+</body>
+</html>

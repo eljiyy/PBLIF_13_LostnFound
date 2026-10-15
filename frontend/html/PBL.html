@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost & Found - Polibatam</title>
+    <link rel="stylesheet" href="../css/PBL.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+
+<nav class="navbar shadow-lg">
+    <div class="container navbar-container flex justify-between items-center w-full">
+        <!-- Logo -->
+        <a href="PBL.html" class="logo text-white font-bold text-xl hover:text-[#cdbc0b] transition">LOST n FOUND</a>
+        
+        <ul class="nav-links flex gap-6 items-center">
+            <li><a href="PBL.html" class="hover:text-[#cdbc0b] transition">Beranda</a></li>
+            <li><a href="daftar-laporan.html" class="hover:text-[#cdbc0b] transition">Daftar Laporan</a></li>
+            <li><a href="lapor.html" class="hover:text-[#cdbc0b] transition">Buat Laporan</a></li>
+            <li><a href="rekap.html" class="hover:text-[#cdbc0b] transition">Rekap Data</a></li>
+            <li><a href="#tentang" class="hover:text-[#cdbc0b] transition">Tentang</a></li>
+        </ul>
+
+        <div class="nav-auth">
+            <button onclick="logout()" class="btn btn-logout shadow-md hover:-translate-y-1 transform transition">Logout</button>
+        </div>
+    </div>
+</nav>
+
+    <section id="home" class="hero flex flex-col justify-center items-center">
+        <div class="container mx-auto text-center">
+            <h1 class="drop-shadow-lg text-5xl font-extrabold">W E L C O M E</h1>
+            <a href="#pencarian" class="btn shadow-lg mt-4 inline-block">Jelajahi</a>
+        </div>
+    </section>
+
+    <!-- FITUR PENCARIAN -->
+    <section id="pencarian" class="search-section py-12">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-[#030c3b] mb-6">Cari Barang Hilang atau Temuan</h2>
+            <form id="formSearch" class="search-form flex gap-4 max-w-2xl mx-auto shadow-lg p-2 rounded-lg bg-white">
+                <input type="text" id="inputSearch" placeholder="Masukkan nama barang, kategori, atau lokasi..." required class="flex-1 w-full border-none focus:ring-0">
+                <button type="submit" class="btn rounded-md">Cari Barang</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- TENTANG KAMI -->
+    <section id="tentang" class="about py-16 bg-white">
+        <div class="container about-container mx-auto flex flex-col md:flex-row items-center gap-10">
+            <div class="about-text flex-1">
+                <h2 class="text-3xl font-bold text-[#030c3b] mb-4 text-center md:text-left">Tentang Kami</h2>
+                <p class="text-lg text-gray-600 text-center md:text-left">Kalau kelen pakai website kami, beuhhhh bakal gacor kali kalian nanti.</p>
+            </div>
+            <div class="about-image flex-1">
+                <img src="/frontend/images/Logo_PBL.jpeg" alt="Tentang Kami" class="rounded-2xl shadow-xl hover:scale-105 transition duration-300">
+            </div>
+        </div>
+    </section>
+
+    <!-- KONTAK -->
+    <section id="kontak" class="contact py-16 bg-gray-100">
+        <div class="container mx-auto max-w-2xl">
+            <h2 class="text-3xl font-bold text-[#030c3b] mb-4 text-center">Hubungi Kami</h2>
+            <p class="text-center text-gray-600 mb-8">Nahhh misal ada masalah kelen kasih tau aja, tapi chat pribadi, jangan disebar ke publik hehehe</p>
+            <form id="formKontak" class="contact-form bg-white p-8 rounded-xl shadow-lg flex flex-col gap-4">
+                <input type="text" name="name" placeholder="Masukkan Nama Anda" required class="p-3 border rounded-lg focus:ring-2 focus:ring-[#030c3b] outline-none">
+                <input type="email" name="email" placeholder="Masukkan Email Anda" required class="p-3 border rounded-lg focus:ring-2 focus:ring-[#030c3b] outline-none">
+                <textarea name="message" rows="5" placeholder="Tuliskan Pesan Anda" required class="p-3 border rounded-lg focus:ring-2 focus:ring-[#030c3b] outline-none"></textarea>
+                <button type="submit" class="btn w-full py-3 rounded-lg font-bold text-lg">Kirim Pesan</button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="footer bg-[#030c3b] py-8">
+        <div class="container mx-auto">
+            <p class="text-white">&copy; 2026 Muhammad Yusuf Fauzi-Fitra Luqmanul Safa. All rights reserved.</p>
+            <ul class="social-links flex justify-center gap-6 mt-4">
+                <li><a href="https://www.instagram.com/el.jiyy" target="_blank" class="hover:text-[#cdbc0b]">Instagram</a></li>
+                <li><a href="https://wa.me/?text=Halo%20Yusuf" target="_blank" class="hover:text-[#cdbc0b]">WhatsApp</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- PANGGIL FILE JAVASCRIPT -->
+    <script src="../js/PBL.js"></script>
+</body>
+</html>

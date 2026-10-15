@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/PBL.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <!-- NAVBAR ADMIN -->
+    <nav class="bg-[#0f2b2e] p-4 shadow-lg">
+        <div class="container mx-auto max-w-6xl flex justify-between items-center">
+            <a href="#" class="text-amber-500 font-bold text-xl flex items-center gap-2">PANEL KONTROL ADMIN</a>
+            <div class="flex items-center gap-4">
+                <span class="text-white text-sm">Petugas: <b id="adminName">Admin Kampus</b></span>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow">Keluar</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto max-w-6xl mt-8 px-4">
+        
+        <!-- KOTAK TAMBAH LAPORAN -->
+        <div class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
+            <h3 class="text-[#0f2b2e] text-lg font-bold mb-4 border-b-2 border-slate-100 pb-2">+ Tambah Berita / Laporan Resmi Barang</h3>
+            <form id="formLapor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <select name="tipe" required class="p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-[#0f2b2e] outline-none">
+                    <option value="" disabled selected>Pilih Tipe...</option>
+                    <option value="Hilang">Barang Hilang</option>
+                    <option value="Ditemukan">Barang Ditemukan</option>
+                </select>
+                <input type="text" name="nama_barang" placeholder="Nama Barang" required class="p-3 rounded-lg border border-slate-300">
+                <select name="kategori" required class="p-3 rounded-lg border border-slate-300">
+                    <option value="" disabled selected>Pilih Kategori...</option>
+                    <option value="1">Elektronik</option>
+                    <option value="2">Dokumen / KTM</option>
+                    <option value="3">Aksesoris</option>
+                    <option value="4">Lainnya</option>
+                </select>
+                <input type="date" name="tanggal" required class="p-3 rounded-lg border border-slate-300">
+                <input type="text" name="lokasi" placeholder="Lokasi Kejadian" required class="p-3 rounded-lg border border-slate-300">
+                <input type="text" name="ciri" placeholder="Ciri-ciri Khusus" required class="p-3 rounded-lg border border-slate-300">
+                <button type="submit" class="lg:col-span-3 bg-[#1a4d52] hover:bg-[#0f2b2e] text-white p-3 rounded-lg font-bold transition shadow-md">Publikasikan Laporan</button>
+            </form>
+        </div>
+
+        <!-- TABEL KONTROL DATA -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+            <h3 class="text-[#0f2b2e] text-lg font-bold mb-4 border-b-2 border-slate-100 pb-2">Daftar Verifikasi Seluruh Laporan</h3>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-600 border-b-2 border-slate-200">
+                        <th class="p-3">Pelapor</th>
+                        <th class="p-3">Barang & Kategori</th>
+                        <th class="p-3">Lokasi & Tanggal</th>
+                        <th class="p-3">Ciri Khusus</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-center">Aksi Admin</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/PBL.js"></script>
+</body>
+</html>
