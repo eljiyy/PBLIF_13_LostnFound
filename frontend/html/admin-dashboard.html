@@ -3,89 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="../css/PBL.css">
+    <title>Dashboard Admin - Lost & Found</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* CSS Khusus untuk Cetak Hard Copy PDF oleh Admin */
         @media print {
             body * { visibility: hidden; }
-            .print-area, .print-area * { visibility: visible; }
-            .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            #areaCetakTabel, #areaCetakTabel * { visibility: visible; }
+            #areaCetakTabel { position: absolute; left: 0; top: 0; width: 100%; }
             .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans min-h-screen">
 
-    <!-- NAVBAR ADMIN (Tema #030c3b) -->
-    <nav class="bg-[#030c3b] p-4 shadow-lg no-print">
-        <div class="container mx-auto max-w-6xl flex justify-between items-center">
-            <a href="#" class="text-amber-500 font-bold text-xl flex items-center gap-2">PANEL KONTROL ADMIN</a>
-            <div class="flex items-center gap-4">
-                <span class="text-white text-sm">Petugas: <b id="adminName">Admin Kampus</b></span>
-                <button onclick="keluarSistemAdmin()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition shadow">Keluar</button>
+    <nav class="bg-[#030c3b] p-4 text-white shadow-md no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <span class="font-bold text-amber-500">Panel Kontrol Admin</span>
+            <div class="flex items-center gap-4 text-sm">
+                <span>Petugas: <b id="adminName">Admin Pusat</b></span>
+                <button onclick="sessionStorage.removeItem('activeUser'); window.location.href='login.html';" class="bg-red-500 px-3 py-1 rounded font-bold shadow">Logout</button>
             </div>
         </div>
     </nav>
 
-    <div class="container mx-auto max-w-6xl mt-8 px-4 print-area">
+    <div class="container mx-auto px-4 py-8">
         
-        <!-- Header Kop Surat untuk Cetak Hard Copy (Hanya rapi saat di print) -->
-        <div class="hidden print:block text-center mb-6 border-b-4 border-black pb-4">
-            <h1 class="text-2xl font-bold">REKAPITULASI BARANG HILANG / TEMUAN</h1>
-            <p>Politeknik Negeri Batam - Divisi Keamanan & Ketertiban</p>
+        <!-- KARTU STATISTIK -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 no-print">
+            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-blue-500 text-center">
+                <h3 class="text-gray-500 font-bold text-sm">TOTAL LAPORAN</h3>
+                <p id="statTotal" class="text-3xl font-extrabold text-[#030c3b] mt-2">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-amber-500 text-center">
+                <h3 class="text-gray-500 font-bold text-sm">MENUNGGU VERIFIKASI</h3>
+                <p id="statPending" class="text-3xl font-extrabold text-amber-600 mt-2">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow border-l-4 border-green-500 text-center">
+                <h3 class="text-gray-500 font-bold text-sm">LAPORAN VALID</h3>
+                <p id="statValid" class="text-3xl font-extrabold text-green-600 mt-2">0</p>
+            </div>
         </div>
 
-        <!-- KOTAK TAMBAH LAPORAN -->
-        <div class="bg-white p-6 rounded-xl shadow-sm mb-8 border border-gray-200">
-            <div class="flex justify-between items-center mb-4 border-b-2 border-slate-100 pb-2">
-                <h3 class="text-[#030c3b] text-lg font-bold">+ Tambah Berita / Laporan Resmi Barang</h3>
-                <button onclick="window.print()" class="no-print bg-slate-200 hover:bg-slate-300 text-slate-800 px-4 py-2 rounded font-bold shadow text-sm">🖨️ Cetak Blanko Laporan (PDF)</button>
+        <!-- FITUR PENCARIAN & FILTER ADMIN -->
+        <div class="bg-white p-4 rounded-t-xl shadow border border-b-0 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
+            <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                <input type="text" id="adminSearch" placeholder="Cari Nama, Barang, atau NIM..." class="p-2 border rounded outline-none focus:ring-2 focus:ring-[#030c3b] text-sm w-full md:w-64">
+                <select id="adminFilter" class="p-2 border rounded outline-none text-sm">
+                    <option value="Semua">Tampilkan Semua Status</option>
+                    <option value="Pending">Hanya Menunggu (Pending)</option>
+                    <option value="Valid">Hanya Valid</option>
+                    <option value="Tidak Valid">Hanya Ditolak</option>
+                </select>
             </div>
-            
-            <form id="formLapor" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <select name="tipe" required class="p-3 rounded-lg border border-slate-300 outline-none">
-                    <option value="" disabled selected>Pilih Tipe...</option>
-                    <option value="Hilang">Laporan Kehilangan</option>
-                    <option value="Ditemukan">Inventaris Barang Temuan</option>
-                </select>
-                <input type="text" name="nama_barang" placeholder="Nama Barang" required class="p-3 rounded-lg border border-slate-300">
-                <select name="kategori" required class="p-3 rounded-lg border border-slate-300">
-                    <option value="" disabled selected>Pilih Kategori...</option>
-                    <option value="1">Elektronik</option>
-                    <option value="2">Dokumen / KTM</option>
-                    <option value="3">Aksesoris</option>
-                </select>
-                <input type="date" name="tanggal" required class="p-3 rounded-lg border border-slate-300">
-                <input type="text" name="lokasi" placeholder="Lokasi Kejadian / Penyimpanan" required class="p-3 rounded-lg border border-slate-300">
-                
-                <!-- FITUR UNGGAH FILE ADMIN -->
-                <div class="flex items-center no-print">
-                    <input type="file" title="Unggah Foto Barang" accept="image/*" class="w-full p-2 border border-slate-300 rounded text-sm text-gray-500 cursor-pointer">
-                </div>
+            <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded text-sm font-bold shadow w-full md:w-auto">🖨️ Cetak Rekap (PDF)</button>
+        </div>
 
-                <button type="submit" class="no-print lg:col-span-3 bg-[#030c3b] hover:bg-[#020826] text-white p-3 rounded-lg font-bold transition shadow-md">Publikasikan ke Database</button>
-            </form>
+        <!-- TABEL VERIFIKASI -->
+        <div id="areaCetakTabel" class="bg-white rounded-b-xl shadow border overflow-x-auto">
+            <table class="w-full text-left text-sm">
+                <thead class="bg-slate-100 border-b">
+                    <tr>
+                        <th class="p-4">Data Pelapor</th>
+                        <th class="p-4">Barang & Kategori</th>
+                        <th class="p-4">Lokasi Kejadian</th>
+                        <th class="p-4">Foto / File</th>
+                        <th class="p-4">Status Admin</th>
+                        <th class="p-4 text-center no-print">Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelVerifikasiAdmin">
+                    <!-- Data laporan akan di-render otomatis oleh JS -->
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Sesi Admin -->
+    <script src="js/PBL.js"></script>
     <script>
-        // Verifikasi sesi Admin
         const user = JSON.parse(sessionStorage.getItem('activeUser'));
-        if (!user || user.role !== 'admin') {
-            alert('Akses Ditolak! Harap login sebagai Admin.');
-            window.location.href = 'login.html';
-        } else {
-            // Tampilkan nama admin
-            document.getElementById('adminName').innerText = user.nama;
-        }
-
-        function keluarSistemAdmin() {
-            sessionStorage.removeItem('activeUser');
-            window.location.href = 'login.html';
-        }
+        if (!user || user.role !== 'admin') { window.location.href = 'login.html'; } 
+        else { document.getElementById('adminName').innerText = user.nama; }
     </script>
 </body>
 </html>
