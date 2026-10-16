@@ -5,86 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lost & Found - Polibatam</title>
     <link rel="stylesheet" href="../css/PBL.css">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* CSS Khusus untuk Cetak Hard Copy PDF */
+        @media print {
+            body * { visibility: hidden; }
+            #areaCetakFormulir, #areaCetakFormulir * { visibility: visible; }
+            #areaCetakFormulir {
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%;
+                border: 2px solid #000;
+                padding: 20px;
+                background: white;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
 
-<nav class="navbar shadow-lg">
-    <div class="container navbar-container flex justify-between items-center w-full">
-        <!-- Logo -->
+<nav class="navbar shadow-lg bg-[#030c3b]">
+    <div class="container navbar-container flex justify-between items-center w-full px-6 py-4">
         <a href="PBL.html" class="logo text-white font-bold text-xl hover:text-[#cdbc0b] transition">LOST n FOUND</a>
-        
-        <ul class="nav-links flex gap-6 items-center">
+        <ul class="nav-links flex gap-6 items-center text-white">
             <li><a href="PBL.html" class="hover:text-[#cdbc0b] transition">Beranda</a></li>
-            <li><a href="daftar-laporan.html" class="hover:text-[#cdbc0b] transition">Daftar Laporan</a></li>
-            <li><a href="lapor.html" class="hover:text-[#cdbc0b] transition">Buat Laporan</a></li>
-            <li><a href="rekap.html" class="hover:text-[#cdbc0b] transition">Rekap Data</a></li>
-            <li><a href="#tentang" class="hover:text-[#cdbc0b] transition">Tentang</a></li>
+            <li><a href="#lapor" class="hover:text-[#cdbc0b] transition">Buat Laporan</a></li>
         </ul>
-
-        <div class="nav-auth">
-            <button onclick="logout()" class="btn btn-logout shadow-md hover:-translate-y-1 transform transition">Logout</button>
+        <div class="nav-auth flex items-center gap-4 text-white">
+            <span class="text-sm">Halo, <b id="sapaanMahasiswa">Mahasiswa</b></span>
+            <button onclick="keluarSistem()" class="bg-red-500 px-4 py-2 rounded font-bold shadow hover:-translate-y-1 transform transition">Logout</button>
         </div>
     </div>
 </nav>
 
-    <section id="home" class="hero flex flex-col justify-center items-center">
+    <section id="home" class="hero flex flex-col justify-center items-center py-20 bg-gray-200">
         <div class="container mx-auto text-center">
-            <h1 class="drop-shadow-lg text-5xl font-extrabold">W E L C O M E</h1>
-            <a href="#pencarian" class="btn shadow-lg mt-4 inline-block">Jelajahi</a>
+            <h1 class="drop-shadow-lg text-5xl font-extrabold text-[#030c3b]">W E L C O M E</h1>
+            <h2 class="text-2xl mt-4 font-bold text-gray-700" id="welcomeBesar">Selamat Datang!</h2>
+            <a href="#pencarian" class="bg-[#030c3b] text-white px-6 py-3 rounded-lg shadow-lg mt-6 inline-block font-bold">Jelajahi</a>
         </div>
     </section>
 
-    <!-- FITUR PENCARIAN -->
-    <section id="pencarian" class="search-section py-12">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold text-[#030c3b] mb-6">Cari Barang Hilang atau Temuan</h2>
-            <form id="formSearch" class="search-form flex gap-4 max-w-2xl mx-auto shadow-lg p-2 rounded-lg bg-white">
-                <input type="text" id="inputSearch" placeholder="Masukkan nama barang, kategori, atau lokasi..." required class="flex-1 w-full border-none focus:ring-0">
-                <button type="submit" class="btn rounded-md">Cari Barang</button>
-            </form>
-        </div>
-    </section>
+    <!-- FORMULIR LAPORAN (Dengan File Upload & Cetak) -->
+    <section id="lapor" class="py-16">
+        <div class="container mx-auto max-w-3xl">
+            <div id="areaCetakFormulir" class="bg-white p-8 rounded-xl shadow-lg border-2 border-gray-100">
+                
+                <div class="text-center mb-8 border-b-2 pb-4">
+                    <h2 class="text-2xl font-bold text-[#030c3b]">Formulir Laporan Kehilangan / Temuan</h2>
+                    <p class="text-gray-500">Politeknik Negeri Batam</p>
+                </div>
 
-    <!-- TENTANG KAMI -->
-    <section id="tentang" class="about py-16 bg-white">
-        <div class="container about-container mx-auto flex flex-col md:flex-row items-center gap-10">
-            <div class="about-text flex-1">
-                <h2 class="text-3xl font-bold text-[#030c3b] mb-4 text-center md:text-left">Tentang Kami</h2>
-                <p class="text-lg text-gray-600 text-center md:text-left">Kalau kelen pakai website kami, beuhhhh bakal gacor kali kalian nanti.</p>
+                <form class="flex flex-col gap-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="font-bold text-sm">Nama Pelapor:</label>
+                            <input type="text" id="inputNamaPelapor" class="w-full p-2 border-b-2 border-gray-300 outline-none" placeholder="Isi nama Anda">
+                        </div>
+                        <div>
+                            <label class="font-bold text-sm">NIM:</label>
+                            <input type="text" id="inputNimPelapor" class="w-full p-2 border-b-2 border-gray-300 outline-none" placeholder="Isi NIM Anda">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="font-bold text-sm">Jenis Laporan:</label>
+                        <select class="w-full p-2 border-b-2 border-gray-300 outline-none">
+                            <option>Saya Kehilangan Barang</option>
+                            <option>Saya Menemukan Barang</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="font-bold text-sm">Deskripsi Barang & Lokasi:</label>
+                        <textarea class="w-full p-2 border-2 border-gray-300 rounded outline-none" rows="3" placeholder="Tuliskan ciri-ciri barang dan lokasi kejadian..."></textarea>
+                    </div>
+
+                    <!-- FITUR UNGGAH FILE BUKTI -->
+                    <div class="no-print">
+                        <label class="font-bold text-sm text-[#030c3b]">Unggah Bukti Foto (Opsional):</label>
+                        <input type="file" accept="image/*" class="w-full mt-2 p-2 border-2 border-dashed border-gray-400 rounded cursor-pointer">
+                        <p class="text-xs text-gray-500 mt-1">Format didukung: JPG, PNG, PDF (Maks 2MB)</p>
+                    </div>
+
+                    <!-- TOMBOL AKSI -->
+                    <div class="flex gap-4 mt-6 no-print">
+                        <button type="button" onclick="window.print()" class="w-1/3 bg-gray-500 hover:bg-gray-600 text-white p-3 rounded font-bold">Cetak Hard Copy (PDF)</button>
+                        <button type="submit" class="w-2/3 bg-[#030c3b] hover:bg-[#020826] text-white p-3 rounded font-bold shadow-lg">Kirim Laporan Online</button>
+                    </div>
+                </form>
             </div>
-            <div class="about-image flex-1">
-                <img src="/frontend/images/Logo_PBL.jpeg" alt="Tentang Kami" class="rounded-2xl shadow-xl hover:scale-105 transition duration-300">
-            </div>
         </div>
     </section>
 
-    <!-- KONTAK -->
-    <section id="kontak" class="contact py-16 bg-gray-100">
-        <div class="container mx-auto max-w-2xl">
-            <h2 class="text-3xl font-bold text-[#030c3b] mb-4 text-center">Hubungi Kami</h2>
-            <p class="text-center text-gray-600 mb-8">Nahhh misal ada masalah kelen kasih tau aja, tapi chat pribadi, jangan disebar ke publik hehehe</p>
-            <form id="formKontak" class="contact-form bg-white p-8 rounded-xl shadow-lg flex flex-col gap-4">
-                <input type="text" name="name" placeholder="Masukkan Nama Anda" required class="p-3 border rounded-lg focus:ring-2 focus:ring-[#030c3b] outline-none">
-                <input type="email" name="email" placeholder="Masukkan Email Anda" required class="p-3 border rounded-lg focus:ring-2 focus:ring-[#030c3b] outline-none">
-                <textarea name="message" rows="5" placeholder="Tuliskan Pesan Anda" required class="p-3 border rounded-lg focus:ring-2 focus:ring-[#030c3b] outline-none"></textarea>
-                <button type="submit" class="btn w-full py-3 rounded-lg font-bold text-lg">Kirim Pesan</button>
-            </form>
-        </div>
-    </section>
+    <!-- Skrip Sesi Mahasiswa -->
+    <script>
+        // Cek sesi login
+        const user = JSON.parse(sessionStorage.getItem('activeUser'));
+        if (!user || user.role !== 'mahasiswa') {
+            alert('Anda harus login sebagai Mahasiswa terlebih dahulu!');
+            window.location.href = 'login.html';
+        } else {
+            // Tampilkan nama sesuai user yang login
+            document.getElementById('sapaanMahasiswa').innerText = user.nama;
+            document.getElementById('welcomeBesar').innerText = 'Selamat Datang, ' + user.nama + '!';
+            
+            // Otomatis mengisi nama dan NIM di formulir jika ingin dicetak
+            document.getElementById('inputNamaPelapor').value = user.nama;
+            if(user.nim) document.getElementById('inputNimPelapor').value = user.nim;
+        }
 
-    <footer class="footer bg-[#030c3b] py-8">
-        <div class="container mx-auto">
-            <p class="text-white">&copy; 2026 Muhammad Yusuf Fauzi-Fitra Luqmanul Safa. All rights reserved.</p>
-            <ul class="social-links flex justify-center gap-6 mt-4">
-                <li><a href="https://www.instagram.com/el.jiyy" target="_blank" class="hover:text-[#cdbc0b]">Instagram</a></li>
-                <li><a href="https://wa.me/?text=Halo%20Yusuf" target="_blank" class="hover:text-[#cdbc0b]">WhatsApp</a></li>
-            </ul>
-        </div>
-    </footer>
-
-    <!-- PANGGIL FILE JAVASCRIPT -->
-    <script src="../js/PBL.js"></script>
+        function keluarSistem() {
+            sessionStorage.removeItem('activeUser');
+            window.location.href = 'login.html';
+        }
+    </script>
 </body>
 </html>

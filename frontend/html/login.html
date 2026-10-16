@@ -3,35 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Portal Keamanan Kampus</title>
+    <title>Login - LostnFound</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Tema disesuaikan dengan warna #030c3b dari website utama */
+        .bg-primary { background-color: #030c3b; }
+        .text-primary { color: #030c3b; }
+        .border-primary { border-color: #030c3b; }
+        .hover-bg-primary:hover { background-color: #020826; }
+    </style>
 </head>
-<body class="bg-[#091719] flex justify-center items-center h-screen font-sans">
+<body class="bg-gray-100 flex justify-center items-center h-screen font-sans relative">
 
-    <div class="bg-white p-10 rounded-2xl shadow-2xl w-full max-w-md">
+    <div id="authContainer" class="bg-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md transition-all duration-300 border-t-8 border-primary">
+        
+        <div class="flex mb-6 border-b-2 border-slate-100">
+            <button id="tabLogin" onclick="switchTab('login')" class="w-1/2 pb-3 font-bold text-primary border-b-4 border-primary transition">Masuk</button>
+            <button id="tabRegister" onclick="switchTab('register')" class="w-1/2 pb-3 font-bold text-slate-400 hover:text-primary transition">Daftar Akun</button>
+        </div>
+
         <div class="text-center mb-6">
-            <h2 class="text-[#0f2b2e] text-3xl font-bold">LostnFound Portal</h2>
-            <p class="text-slate-500 text-sm mt-1">Sistem Verifikasi Barang Hilang & Temuan Kampus</p>
+            <h2 class="text-primary text-3xl font-bold">LostnFound</h2>
+            <p class="text-slate-500 text-sm mt-1">Sistem Verifikasi Barang Kampus</p>
         </div>
         
-        <div id="errorMsg" class="hidden bg-red-100 text-red-600 border border-red-500 p-3 rounded-lg mb-5 text-center text-sm font-bold">
-            NIM/Username atau Kata Sandi salah!
-        </div>
+        <div id="alertMsg" class="hidden p-3 rounded-lg mb-5 text-center text-sm font-bold transition-all"></div>
 
-        <form onsubmit="login(event)" class="flex flex-col gap-4">
-            <div>
-                <label class="text-sm font-bold text-slate-800 block mb-1">NIM / ID Petugas</label>
-                <input type="text" id="nim" placeholder="Ketik 'admin' untuk akses panel admin" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-[#0f2b2e] transition">
+        <form id="authForm" onsubmit="handleAuth(event)" class="flex flex-col gap-4">
+            <div id="nameField" class="hidden">
+                <label class="text-sm font-bold text-slate-800 block mb-1">Nama Lengkap Mahasiswa</label>
+                <input type="text" id="nama" placeholder="Masukkan nama lengkap Anda" class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-primary transition">
             </div>
+
+            <div>
+                <label class="text-sm font-bold text-slate-800 block mb-1">NIM / ID Admin</label>
+                <input type="text" id="nim" placeholder="Contoh: 33123456 (Ketik 'admin' untuk Admin)" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-primary transition">
+            </div>
+
             <div>
                 <label class="text-sm font-bold text-slate-800 block mb-1">Kata Sandi</label>
-                <input type="password" id="password" placeholder="********" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-[#0f2b2e] transition">
+                <input type="password" id="password" placeholder="********" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-primary transition">
             </div>
-            <button type="submit" class="w-full p-3 mt-2 bg-[#0f2b2e] hover:bg-[#1a4d52] text-white rounded-lg font-bold transition shadow-lg">Masuk Sistem</button>
+
+            <button type="submit" id="submitBtn" class="w-full p-3 mt-2 bg-primary hover-bg-primary text-white rounded-lg font-bold transition shadow-lg">
+                Masuk Sistem
+            </button>
         </form>
     </div>
 
-    <script src="../js/PBL.js"></script>
+    <script>
+        let currentMode = 'login';
+        
+        // Inisialisasi Database Lokal
+        if (!localStorage.getItem('lostFoundDB')) {
+            localStorage.setItem('lostFoundDB', JSON.stringify([]));
+        }
+
+        const ADMIN_CREDENTIALS = { id: 'admin', nama: 'Administrator Pusat', password: 'admin' };
+
+        function switchTab(mode) {
+            currentMode = mode;
+            const nameField = document.getElementById('nameField');
+            const submitBtn = document.getElementById('submitBtn');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            
+            document.getElementById('alertMsg').classList.add('hidden');
+            document.getElementById('authForm').reset();
+
+            if (mode === 'register') {
+                nameField.classList.remove('hidden');
+                document.getElementById('nama').required = true;
+                submitBtn.innerHTML = "Daftarkan Akun";
+                tabRegister.classList.add('text-primary', 'border-b-4', 'border-primary');
+                tabRegister.classList.remove('text-slate-400');
+                tabLogin.classList.remove('text-primary', 'border-b-4', 'border-primary');
+                tabLogin.classList.add('text-slate-400');
+            } else {
+                nameField.classList.add('hidden');
+                document.getElementById('nama').required = false;
+                submitBtn.innerHTML = "Masuk Sistem";
+                tabLogin.classList.add('text-primary', 'border-b-4', 'border-primary');
+                tabLogin.classList.remove('text-slate-400');
+                tabRegister.classList.remove('text-primary', 'border-b-4', 'border-primary');
+                tabRegister.classList.add('text-slate-400');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertMsg = document.getElementById('alertMsg');
+            alertMsg.className = `p-3 rounded-lg mb-5 text-center text-sm font-bold block border ${type === 'error' ? 'bg-red-100 text-red-600 border-red-500' : 'bg-green-100 text-green-600 border-green-500'}`;
+            alertMsg.innerHTML = message;
+        }
+
+        function handleAuth(event) {
+            event.preventDefault();
+            const nimInput = document.getElementById('nim').value.trim();
+            const passwordInput = document.getElementById('password').value;
+            let users = JSON.parse(localStorage.getItem('lostFoundDB'));
+
+            if (currentMode === 'register') {
+                const namaInput = document.getElementById('nama').value.trim();
+                const isExist = users.find(u => u.nim === nimInput) || nimInput.toLowerCase() === 'admin';
+                
+                if (isExist) {
+                    showAlert('NIM/ID sudah digunakan!', 'error');
+                } else {
+                    users.push({ nama: namaInput, nim: nimInput, password: passwordInput });
+                    localStorage.setItem('lostFoundDB', JSON.stringify(users));
+                    showAlert('Registrasi berhasil! Silakan masuk.', 'success');
+                    setTimeout(() => switchTab('login'), 1500);
+                }
+            } else {
+                if (nimInput === ADMIN_CREDENTIALS.id && passwordInput === ADMIN_CREDENTIALS.password) {
+                    // Set sesi admin dan redirect ke halaman admin
+                    sessionStorage.setItem('activeUser', JSON.stringify({ nama: ADMIN_CREDENTIALS.nama, role: 'admin' }));
+                    window.location.href = 'admin-dashboard.html';
+                    return;
+                }
+
+                const student = users.find(u => u.nim === nimInput && u.password === passwordInput);
+                if (student) {
+                    // Set sesi mahasiswa dan redirect ke halaman utama
+                    sessionStorage.setItem('activeUser', JSON.stringify({ nama: student.nama, nim: student.nim, role: 'mahasiswa' }));
+                    window.location.href = 'PBL.html';
+                } else {
+                    showAlert('NIM atau Kata Sandi salah!', 'error');
+                }
+            }
+        }
+    </script>
 </body>
 </html>

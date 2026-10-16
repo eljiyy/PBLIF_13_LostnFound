@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async function() {
             });
 
             if (res.ok) {
-                alert('✅ BERHASIL! Laporan Anda telah tersimpan di Database Node.js.');
+                alert('✅ BERHASIL! Laporan Anda telah tersimpan.');
                 window.location.href = 'daftar-laporan.html';
             }
         });
