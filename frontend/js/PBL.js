@@ -1,198 +1,260 @@
 // ==========================================
-// 1. MANAJEMEN DATABASE LOKAL (LocalStorage)
+// 1. DATABASE LOKAL (ANTI-CRASH)
 // ==========================================
-function getLaporanDB() {
-    return JSON.parse(localStorage.getItem('lostFoundLaporan')) || [];
+function getLaporanDB() { 
+    try {
+        let data = JSON.parse(localStorage.getItem('lostFoundLaporan'));
+        return Array.isArray(data) ? data : [];
+    } catch (e) { return []; }
 }
-function saveLaporanDB(data) {
-    localStorage.setItem('lostFoundLaporan', JSON.stringify(data));
+function saveLaporanDB(data) { localStorage.setItem('lostFoundLaporan', JSON.stringify(data)); }
+function getNotifDB() { 
+    try {
+        let data = JSON.parse(localStorage.getItem('lostFoundNotif'));
+        return Array.isArray(data) ? data : [];
+    } catch (e) { return []; }
 }
-function getNotifDB() {
-    return JSON.parse(localStorage.getItem('lostFoundNotif')) || [];
-}
-function saveNotifDB(data) {
-    localStorage.setItem('lostFoundNotif', JSON.stringify(data));
-}
+function saveNotifDB(data) { localStorage.setItem('lostFoundNotif', JSON.stringify(data)); }
 
-// ==========================================
-// 2. FUNGSI KIRIM LAPORAN OLEH MAHASISWA
-// ==========================================
-function prosesKirimLaporan(e) {
-    e.preventDefault(); // Mencegah reload halaman secara paksa
-    
-    const user = JSON.parse(sessionStorage.getItem('activeUser'));
-    if (!user || user.role !== 'mahasiswa') {
-        alert('Sesi tidak valid! Silakan login kembali.');
-        window.location.href = 'login.html';
-        return;
+function initDummyData() {
+    if (getLaporanDB().length === 0) {
+        const dummies = [
+            { id: 101, pelapor: 'Budi Santoso', nim: '33123001', tipe: 'Kehilangan', nama_barang: 'Dompet Kulit Coklat', kategori: 'Aksesoris', tanggal: '2026-10-10', lokasi: 'Kantin Utama', ciri: 'Berisi KTP dan KTM, kulit asli.', buktiFile: 'https://images.unsplash.com/photo-1627123424574-724758594e93?auto=format&fit=crop&w=400&q=80', status: 'Valid', tanggalDibuat: '10/10/2026' },
+            { id: 102, pelapor: 'Siti Aminah', nim: '33123002', tipe: 'Ditemukan', nama_barang: 'Kunci Motor Honda', kategori: 'Aksesoris', tanggal: '2026-10-12', lokasi: 'Parkiran Gedung B', ciri: 'Ada gantungan kunci beruang lucu.', buktiFile: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?auto=format&fit=crop&w=400&q=80', status: 'Valid', tanggalDibuat: '12/10/2026' }
+        ];
+        saveLaporanDB(dummies);
     }
-
-    // Mengambil nilai input
-    const form = e.target;
-    const tipe = form.querySelector('[name="tipe"]').value;
-    const nama_barang = form.querySelector('[name="nama_barang"]').value;
-    const kategori = form.querySelector('[name="kategori"]').value;
-    const tanggal = form.querySelector('[name="tanggal"]').value;
-    const lokasi = form.querySelector('[name="lokasi"]').value;
-    const ciri = form.querySelector('[name="ciri"]').value;
-    
-    const fileInput = form.querySelector('input[type="file"]');
-    const file = (fileInput && fileInput.files.length > 0) ? fileInput.files[0].name : 'Tidak_ada_bukti.jpg';
-
-    const laporanBaru = {
-        id: Date.now(),
-        pelapor: user.nama,
-        nim: user.nim,
-        tipe: tipe,
-        nama_barang: nama_barang,
-        kategori: kategori,
-        tanggal: tanggal,
-        lokasi: lokasi,
-        ciri: ciri,
-        buktiFile: file,
-        status: 'Pending',
-        tanggalDibuat: new Date().toLocaleDateString('id-ID')
-    };
-
-    // Eksekusi Simpan
-    const database = getLaporanDB();
-    database.push(laporanBaru);
-    saveLaporanDB(database);
-
-    alert('✅ Laporan berhasil dikirim! Silakan tunggu verifikasi Admin.');
-    window.location.href = 'PBL.html';
 }
 
 // ==========================================
-// 3. FUNGSI ADMIN (RENDER, FILTER, HAPUS)
+// 2. KIRIM LAPORAN (MAHASISWA)
 // ==========================================
-window.renderTabelAdmin = function(filterStatus = 'Semua', searchQuery = '') {
+window.prosesKirimLaporan = function(e) {
+    e.preventDefault();
+    try {
+        const user = JSON.parse(sessionStorage.getItem('activeUser'));
+        if (!user || user.role !== 'mahasiswa') return window.location.href = 'login.html';
+
+        const form = e.target;
+        const file = 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=400&q=80'; 
+
+        const laporanBaru = {
+            id: Date.now(),
+            pelapor: user.nama || 'Tanpa Nama',
+            nim: user.nim || '000',
+            tipe: form.querySelector('[name="tipe"]').value || '',
+            nama_barang: form.querySelector('[name="nama_barang"]').value || '',
+            kategori: form.querySelector('[name="kategori"]').value || '',
+            tanggal: form.querySelector('[name="tanggal"]').value || '',
+            lokasi: form.querySelector('[name="lokasi"]').value || '',
+            ciri: form.querySelector('[name="ciri"]').value || '',
+            buktiFile: file,
+            status: 'Pending',
+            tanggalDibuat: new Date().toLocaleDateString('id-ID')
+        };
+
+        const database = getLaporanDB();
+        database.push(laporanBaru);
+        saveLaporanDB(database);
+
+        alert('✅ Laporan Anda Berhasil Dikirim! Mohon tunggu proses validasi oleh Admin Keamanan Kampus.');
+        window.location.href = 'PBL.html';
+    } catch (error) {
+        alert("Sistem mengalami kendala.");
+    }
+};
+
+// ==========================================
+// 3. FITUR ADMIN & VERIFIKASI KETAT
+// ==========================================
+let currentVerifyId = null; // Menyimpan ID sementara untuk modal
+
+window.renderTabelAdmin = function(searchQuery = '') {
     const tbody = document.getElementById('tabelVerifikasiAdmin');
     if (!tbody) return; 
 
     let database = getLaporanDB();
-    
-    // Terapkan Filter
-    if (filterStatus !== 'Semua') {
-        database = database.filter(item => item.status === filterStatus);
-    }
-    // Terapkan Pencarian
     if (searchQuery) {
         const q = searchQuery.toLowerCase();
         database = database.filter(item => 
-            item.nama_barang.toLowerCase().includes(q) || 
-            item.pelapor.toLowerCase().includes(q) || 
-            item.nim.toLowerCase().includes(q)
+            (item.nama_barang || '').toLowerCase().includes(q) || 
+            (item.pelapor || '').toLowerCase().includes(q) || 
+            (item.nim || '').toLowerCase().includes(q)
         );
     }
 
     tbody.innerHTML = '';
-    if (database.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-gray-500 font-bold">Tidak ada data ditemukan.</td></tr>`;
-        return;
-    }
-
     database.slice().reverse().forEach(item => {
         const isPending = item.status === 'Pending';
-        const statusBg = isPending ? 'bg-amber-100 text-amber-700' : (item.status === 'Valid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700');
+        const isSelesai = item.status === 'Selesai';
+        let statusBg = isPending ? 'bg-amber-100 text-amber-700' : (item.status === 'Valid' ? 'bg-blue-100 text-blue-700' : (isSelesai ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'));
 
         tbody.innerHTML += `
             <tr class="border-b hover:bg-slate-50 transition">
                 <td class="p-4"><b>${item.pelapor}</b><br><span class="text-xs text-gray-500">NIM: ${item.nim}</span></td>
                 <td class="p-4"><b>${item.nama_barang}</b><br><span class="text-xs font-bold text-gray-400">${item.tipe} - ${item.kategori}</span></td>
-                <td class="p-4">${item.lokasi}<br><span class="text-xs text-gray-400">${item.tanggal}</span></td>
-                <td class="p-4"><span class="text-xs bg-slate-200 px-2 py-1 rounded text-gray-700">📷 ${item.buktiFile}</span></td>
-                <td class="p-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${statusBg}">${item.status}</span></td>
-                <td class="p-4 text-center">
-                    ${isPending ? `
-                        <div class="flex gap-2 justify-center mb-1">
-                            <button onclick="verifikasiAdmin(${item.id}, true)" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded text-xs font-bold">Setuju</button>
-                            <button onclick="tolakDenganAlasan(${item.id})" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded text-xs font-bold">Tolak</button>
-                        </div>
-                    ` : ''}
-                    <button onclick="hapusLaporan(${item.id})" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-bold w-full mt-1">Hapus Data</button>
+                <td class="p-4">${item.lokasi}<br><span class="text-xs text-blue-500 hover:underline cursor-pointer font-bold" onclick="lihatBukti('${item.buktiFile}')">📷 Lihat Bukti Foto</span></td>
+                <td class="p-4 text-center"><span class="px-3 py-1 rounded-full text-xs font-bold ${statusBg}">${item.status || 'Pending'}</span></td>
+                <td class="p-4">
+                    <div class="flex flex-col gap-1 justify-center max-w-[150px] mx-auto">
+                        ${isPending || item.status === 'Tidak Valid' ? `<button onclick="bukaModalVerifikasi(${item.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-[11px] font-bold shadow">🛡️ Verifikasi Ketat</button>` : ''}
+                        ${isPending || item.status === 'Valid' ? `<button onclick="tolakDenganAlasan(${item.id})" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded text-[11px] font-bold shadow">Tolak Laporan</button>` : ''}
+                        ${item.status === 'Valid' ? `<button onclick="ubahStatus(${item.id}, 'Selesai')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded text-[11px] font-bold shadow">Tandai Selesai</button>` : ''}
+                        <button onclick="hapusLaporan(${item.id})" class="text-red-500 hover:text-red-700 text-[11px] font-bold mt-1 underline">Hapus Data</button>
+                    </div>
                 </td>
             </tr>
         `;
     });
-
-    renderStatistikAdmin();
 };
 
-window.renderStatistikAdmin = function() {
-    const db = getLaporanDB();
-    if(document.getElementById('statTotal')) document.getElementById('statTotal').innerText = db.length;
-    if(document.getElementById('statPending')) document.getElementById('statPending').innerText = db.filter(d => d.status === 'Pending').length;
-    if(document.getElementById('statValid')) document.getElementById('statValid').innerText = db.filter(d => d.status === 'Valid').length;
-}
+window.lihatBukti = function(url) {
+    window.open(url, '_blank');
+};
 
-window.verifikasiAdmin = function(id, statusValid, alasan = '') {
+// ---- LOGIKA MODAL VERIFIKASI KETAT ----
+window.bukaModalVerifikasi = function(id) {
+    currentVerifyId = id;
+    const item = getLaporanDB().find(x => x.id === id);
+    if(!item) return;
+
+    // Masukkan data ke dalam Modal
+    document.getElementById('mv_pelapor').innerText = `${item.pelapor} (${item.nim})`;
+    document.getElementById('mv_barang').innerText = `${item.nama_barang} (${item.tipe})`;
+    document.getElementById('mv_ciri').innerText = item.ciri;
+    
+    // Reset Form Modal
+    document.getElementById('chk_bukti').checked = false;
+    document.getElementById('chk_spam').checked = false;
+    document.getElementById('admin_pin').value = '';
+
+    // Tampilkan Modal
+    document.getElementById('modalVerifikasi').classList.remove('hidden');
+    document.getElementById('modalVerifikasi').classList.add('flex');
+};
+
+window.tutupModalVerifikasi = function() {
+    document.getElementById('modalVerifikasi').classList.add('hidden');
+    document.getElementById('modalVerifikasi').classList.remove('flex');
+    currentVerifyId = null;
+};
+
+window.konfirmasiVerifikasi = function() {
+    const chkBukti = document.getElementById('chk_bukti').checked;
+    const chkSpam = document.getElementById('chk_spam').checked;
+    const pin = document.getElementById('admin_pin').value;
+
+    if (!chkBukti || !chkSpam) {
+        alert("Peringatan: Anda harus mencentang kedua kotak persetujuan verifikasi!");
+        return;
+    }
+    // PIN ADMIN RAHASIA (Hardcoded untuk demo)
+    if (pin !== "123456") {
+        alert("Akses Ditolak: PIN Otorisasi Admin Salah!");
+        return;
+    }
+
+    // Jika PIN benar dan dicentang, jalankan Validasi
+    ubahStatus(currentVerifyId, 'Valid');
+    tutupModalVerifikasi();
+    alert("Berhasil! Laporan telah terverifikasi ketat dan otomatis diterbitkan ke Berita Utama Kampus.");
+};
+// ----------------------------------------
+
+window.ubahStatus = function(id, statusBaru, alasan = '') {
     const database = getLaporanDB();
     const index = database.findIndex(l => l.id === id);
     if (index !== -1) {
-        database[index].status = statusValid ? 'Valid' : 'Tidak Valid';
+        database[index].status = statusBaru;
         saveLaporanDB(database);
 
         const listNotif = getNotifDB();
+        let pesan = '';
+        if (statusBaru === 'Valid') pesan = `Pembaruan berhasil. Laporan '${database[index].nama_barang}' telah diterbitkan ke Berita Utama.`;
+        else if (statusBaru === 'Selesai') pesan = `Laporan '${database[index].nama_barang}' ditandai SELESAI. Barang telah dikembalikan ke pemiliknya.`;
+        else pesan = `Data Anda terdeteksi tidak valid, <a href="lapor.html" class="text-red-500 underline font-bold">klik untuk memperbarui</a>. Catatan Petugas: ${alasan}`;
+        
         listNotif.push({
-            id: Date.now(), nim: database[index].nim, status: database[index].status,
-            pesan: statusValid ? `Laporan '${database[index].nama_barang}' dipublikasikan.` : `Laporan '${database[index].nama_barang}' ditolak. Alasan: ${alasan}`,
+            id: Date.now(), nim: database[index].nim, status: statusBaru, pesan: pesan,
             waktu: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
         });
         saveNotifDB(listNotif);
+        
+        // REFRESH SEMUA TABEL OTOMATIS
         renderTabelAdmin();
+        renderBeritaTerkini(); 
     }
 };
 
 window.tolakDenganAlasan = function(id) {
-    const alasan = prompt('Masukkan alasan penolakan:');
-    if (alasan) window.verifikasiAdmin(id, false, alasan);
+    const alasan = prompt('Masukkan catatan/alasan mengapa laporan ini ditolak:');
+    if (alasan) window.ubahStatus(id, 'Tidak Valid', alasan);
 };
 
 window.hapusLaporan = function(id) {
-    if(confirm('Yakin ingin menghapus laporan ini secara permanen?')) {
-        let database = getLaporanDB();
-        database = database.filter(l => l.id !== id);
-        saveLaporanDB(database);
+    if(confirm('Hapus laporan ini secara permanen dari database?')) {
+        saveLaporanDB(getLaporanDB().filter(l => l.id !== id));
         renderTabelAdmin();
+        renderBeritaTerkini();
+    }
+};
+
+window.switchAdminTab = function(tabName) {
+    document.getElementById('tabAntrean').classList.add('hidden');
+    document.getElementById('tabBerita').classList.add('hidden');
+    
+    document.getElementById(`tab${tabName}`).classList.remove('hidden');
+    
+    // Paksa refresh fungsi berita saat tab dibuka agar datanya selalu baru
+    if(tabName === 'Berita') {
+        renderBeritaTerkini(); 
     }
 };
 
 // ==========================================
-// 4. FUNGSI MAHASISWA (PENCARIAN BERITA TERKINI)
+// 4. BERITA TERKINI & NOTIFIKASI MAHASISWA
 // ==========================================
 window.renderBeritaTerkini = function(searchQuery = '') {
     const container = document.getElementById('feedBeritaTerkini');
     if (!container) return;
 
-    let laporanValid = getLaporanDB().filter(item => item.status === 'Valid');
+    let laporan = getLaporanDB().filter(item => item.status === 'Valid' || item.status === 'Selesai');
 
     if (searchQuery) {
         const q = searchQuery.toLowerCase();
-        laporanValid = laporanValid.filter(item => 
-            item.nama_barang.toLowerCase().includes(q) || 
-            item.lokasi.toLowerCase().includes(q)
+        laporan = laporan.filter(item => 
+            (item.nama_barang || '').toLowerCase().includes(q) || 
+            (item.lokasi || '').toLowerCase().includes(q) ||
+            (item.kategori || '').toLowerCase().includes(q) ||
+            (item.pelapor || '').toLowerCase().includes(q)
         );
     }
 
     container.innerHTML = '';
-    if (laporanValid.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10">Tidak ada barang yang cocok dengan pencarian Anda.</div>`;
+    if (laporan.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-center text-gray-500 py-10 bg-white rounded-xl border">Belum ada Berita Utama terbaru.</div>`;
         return;
     }
 
-    laporanValid.forEach(item => {
-        const badgeColor = (item.tipe === 'Kehilangan' || item.tipe === 'Hilang') ? 'bg-red-500' : 'bg-green-600';
+    laporan.reverse().forEach(item => {
+        const badgeColor = (item.tipe === 'Kehilangan' || item.tipe === 'Hilang') ? 'bg-red-500' : 'bg-blue-600';
+        const filterSelesai = item.status === 'Selesai' ? '<div class="absolute inset-0 bg-white/70 flex items-center justify-center z-10 backdrop-blur-[1px]"><span class="bg-green-600 text-white font-extrabold px-6 py-2 rounded-full border-4 border-white shadow-xl transform -rotate-12 text-xl tracking-widest">DIKEMBALIKAN</span></div>' : '';
+
         container.innerHTML += `
-            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 relative group">
+                ${filterSelesai}
+                <div class="h-48 w-full bg-gray-200 overflow-hidden relative">
+                    <img src="${item.buktiFile}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <span class="absolute top-3 right-3 ${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full shadow-md uppercase tracking-wider">${item.tipe}</span>
+                </div>
                 <div class="p-5">
-                    <span class="${badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full">${item.tipe.toUpperCase()}</span>
-                    <h3 class="text-xl font-bold text-[#030c3b] mt-3 mb-2">${item.nama_barang}</h3>
-                    <p class="text-sm text-gray-600 mb-1">📍 <b>Lokasi:</b> ${item.lokasi}</p>
-                    <p class="text-sm text-gray-600 mb-4">📅 <b>Tanggal:</b> ${item.tanggal}</p>
-                    <div class="pt-3 border-t text-xs text-gray-500 flex justify-between">
-                        <span>Oleh: <b>${item.pelapor}</b></span>
-                        <span class="text-emerald-600 font-bold">✓ Terverifikasi</span>
+                    <div class="text-xs text-amber-500 font-bold uppercase tracking-wider mb-1">${item.kategori}</div>
+                    <h3 class="text-xl font-bold text-[#030c3b] mb-2 truncate">${item.nama_barang}</h3>
+                    <p class="text-sm text-gray-600 mb-1"><span class="font-bold">Lokasi:</span> ${item.lokasi}</p>
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2"><span class="font-bold">Ciri Khusus:</span> ${item.ciri}</p>
+                    <div class="pt-3 border-t text-xs text-gray-500 flex justify-between items-center">
+                        <span class="truncate w-3/4">Oleh: <b>${item.pelapor}</b> (${item.nim})</span>
+                        <span class="text-blue-600 font-bold">Terverifikasi</span>
                     </div>
                 </div>
             </div>
@@ -200,36 +262,63 @@ window.renderBeritaTerkini = function(searchQuery = '') {
     });
 };
 
+window.renderNotifikasiLonceng = function() {
+    const user = JSON.parse(sessionStorage.getItem('activeUser'));
+    if (!user || user.role !== 'mahasiswa') return;
+
+    const listNotif = getNotifDB().filter(n => n.nim === user.nim);
+    const badge = document.getElementById('notifBadge');
+    const container = document.getElementById('notifDropdown');
+    if (!badge || !container) return;
+
+    badge.innerText = listNotif.length;
+    badge.style.display = listNotif.length > 0 ? 'inline-block' : 'none';
+
+    container.innerHTML = `<div class="p-3 border-b text-sm font-bold bg-[#030c3b] text-white">Notifikasi Sistem</div>`;
+    if (listNotif.length === 0) {
+        container.innerHTML += `<div class="p-4 text-xs text-gray-500 text-center">Tidak ada pemberitahuan baru.</div>`;
+        return;
+    }
+
+    listNotif.reverse().forEach(n => {
+        const bg = n.status === 'Valid' ? 'bg-blue-50' : (n.status === 'Selesai' ? 'bg-green-50' : 'bg-red-50');
+        const tx = n.status === 'Valid' ? 'text-blue-700' : (n.status === 'Selesai' ? 'text-green-700' : 'text-red-700');
+        container.innerHTML += `
+            <div class="p-3 border-b ${bg} text-xs">
+                <div class="flex justify-between font-bold ${tx} mb-1">
+                    <span>${n.status}</span><span class="text-gray-400 font-normal">${n.waktu}</span>
+                </div>
+                <p class="text-gray-700 leading-relaxed">${n.pesan}</p>
+            </div>
+        `;
+    });
+};
+
+window.toggleNotifDropdown = () => document.getElementById('notifDropdown').classList.toggle('hidden');
+
 // ==========================================
-// 5. INISIALISASI OTOMATIS SAAT HALAMAN DIBUKA
+// 5. INISIALISASI AUTO RUN
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Jalankan fitur Admin jika ada tabel admin
+    initDummyData();
+
     if (document.getElementById('tabelVerifikasiAdmin')) {
         renderTabelAdmin();
-        
-        // Listener Pencarian Admin
-        document.getElementById('adminSearch').addEventListener('input', (e) => {
-            renderTabelAdmin(document.getElementById('adminFilter').value, e.target.value);
-        });
-        document.getElementById('adminFilter').addEventListener('change', (e) => {
-            renderTabelAdmin(e.target.value, document.getElementById('adminSearch').value);
-        });
+        const adminSearch = document.getElementById('adminSearch');
+        if (adminSearch) adminSearch.addEventListener('input', (e) => renderTabelAdmin(e.target.value));
     }
 
-    // Jalankan fitur Mahasiswa (Berita)
     if (document.getElementById('feedBeritaTerkini')) {
         renderBeritaTerkini();
-        
-        // Listener Pencarian Mahasiswa
-        document.getElementById('studentSearch').addEventListener('input', (e) => {
-            renderBeritaTerkini(e.target.value);
-        });
+        const globalSearch = document.getElementById('globalSearch');
+        if (globalSearch) globalSearch.addEventListener('input', (e) => renderBeritaTerkini(e.target.value));
     }
 
-    // Amankan form pelaporan dengan Event Listener
+    renderNotifikasiLonceng();
+
     const formLapor = document.getElementById('formLaporMahasiswa');
     if (formLapor) {
-        formLapor.addEventListener('submit', prosesKirimLaporan);
+        formLapor.removeAttribute('onsubmit'); 
+        formLapor.addEventListener('submit', function(e) { window.prosesKirimLaporan(e); });
     }
 });
