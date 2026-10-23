@@ -3,98 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FindIt</title>
-    <!-- Tailwind CSS -->
+    <title>FindIt - Autentikasi Sistem</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        /* Tema disesuaikan dengan warna #030c3b dari website utama */
-        .bg-primary { background-color: #030c3b; }
-        .text-primary { color: #030c3b; }
-        .border-primary { border-color: #030c3b; }
-        .hover-bg-primary:hover { background-color: #020826; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('images/bgpoltek.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0; padding: 0;
+            overflow: hidden; 
+        }
+
+        /* Gradien ala Estareal: Atas lebih terang, Bawah sangat gelap */
+        .estareal-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(180deg, rgba(20,20,20,0.7) 0%, rgba(10,10,10,0.95) 100%);
+            z-index: -2;
+        }
+
+        /* Tipografi Abstrak Latar Belakang */
+        .massive-text {
+            position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
+            font-size: 20vw; font-weight: 800; color: rgba(0,0,0,0.3);
+            z-index: -1; line-height: 0.75; letter-spacing: -0.05em; white-space: nowrap; user-select: none;
+        }
+
+        /* Panel Kaca (Perfect Blur) */
+        .perfect-blur {
+            background: rgba(25, 25, 25, 0.5);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            border-radius: 12px;
+        }
+
+        /* Input Minimalis */
+        .glass-input {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; padding: 12px 0 12px 30px; font-size: 0.95rem;
+            outline: none; transition: all 0.3s ease;
+        }
+        .glass-input:focus { border-bottom: 1px solid #fff; }
+        .glass-input::placeholder { color: rgba(255, 255, 255, 0.4); font-weight: 300; }
+        
+        .input-icon { position: absolute; left: 0; top: 14px; color: rgba(255, 255, 255, 0.5); }
+
+        .btn-submit { background: #fff; color: #000; width: 100%; padding: 14px; border-radius: 6px; font-weight: 600; margin-top: 10px; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-submit:hover { background: #e0e0e0; }
+        
+        /* Toggle Login/Register */
+        .tab-btn { padding: 10px 20px; font-weight: 500; font-size: 0.9rem; color: rgba(255,255,255,0.5); border-bottom: 2px solid transparent; transition: 0.3s; cursor: pointer; }
+        .tab-btn.active { color: #fff; border-bottom: 2px solid #fff; }
     </style>
 </head>
-<body class="bg-gray-100 flex justify-center items-center h-screen font-sans relative">
+<body class="flex flex-col min-h-screen items-center justify-center relative px-4">
 
-    <div id="authContainer" class="bg-white p-8 md:p-10 rounded-2xl shadow-2xl w-full max-w-md transition-all duration-300 border-t-8 border-primary">
+    <div class="estareal-overlay"></div>
+    <img src="../images/bgpoltek.jpeg" alt="Background" class="fixed inset-0 w-full h-full object-cover z-[-3]">
+
+    <!-- PUSAT FORM LOGIN STANDAR -->
+    <div class="perfect-blur w-full max-w-md p-10 text-white relative z-10">
         
-        <div class="flex mb-6 border-b-2 border-slate-100">
-            <button id="tabLogin" onclick="switchTab('login')" class="w-1/2 pb-3 font-bold text-primary border-b-4 border-primary transition">Masuk</button>
-            <button id="tabRegister" onclick="switchTab('register')" class="w-1/2 pb-3 font-bold text-slate-400 hover:text-primary transition">Daftar Akun</button>
+        <!-- Header & Logo -->
+        <div class="flex flex-col items-center mb-8 text-center">
+            <div class="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center text-2xl mb-4">
+                <img src="../images/Logo Pbl FindIt.jpg" alt="Logo" class="w-10 h-10 object-cover rounded-full">
+            </div>
+            <h2 class="text-2xl font-bold tracking-wide">FindIt</h2>
+            <p class="text-xs text-gray-400 mt-1 font-light tracking-widest uppercase">Central Authentication</p>
         </div>
 
-        <div class="text-center mb-6">
-            <h2 class="text-primary text-3xl font-bold">FindIt</h2>
-            <p class="text-slate-500 text-sm mt-1">Sistem Verifikasi Barang Kampus</p>
+        <!-- Tab Navigasi Form -->
+        <div class="flex justify-center mb-6 border-b border-white/10">
+            <div id="tabLogin" onclick="setMode('login')" class="tab-btn active">Sign In</div>
+            <div id="tabRegister" onclick="setMode('register')" class="tab-btn">Register</div>
         </div>
-        
-        <div id="alertMsg" class="hidden p-3 rounded-lg mb-5 text-center text-sm font-bold transition-all"></div>
 
-        <form id="authForm" onsubmit="handleAuth(event)" class="flex flex-col gap-4">
-            <div id="nameField" class="hidden">
-                <label class="text-sm font-bold text-slate-800 block mb-1">Nama Lengkap Mahasiswa</label>
-                <input type="text" id="nama" placeholder="Masukkan nama lengkap Anda" class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-primary transition">
+        <!-- Pesan Notifikasi -->
+        <div id="alertMsg" class="hidden p-3 mb-5 text-sm text-center rounded bg-white text-black font-medium transition-all"></div>
+
+        <!-- Form Autentikasi -->
+        <form id="authForm" onsubmit="handleAuth(event)" class="flex flex-col gap-5">
+            
+            <div id="registerFields" class="hidden flex-col gap-5">
+                <div class="relative">
+                    <i class="fa-regular fa-id-card input-icon"></i>
+                    <input type="text" id="nama" placeholder="Full Name (Nama Lengkap)" class="glass-input">
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-phone input-icon"></i>
+                    <input type="number" id="nohp" placeholder="Phone Number" class="glass-input">
+                </div>
             </div>
 
-            <div>
-                <label class="text-sm font-bold text-slate-800 block mb-1">NIM / ID Admin</label>
-                <input type="text" id="nim" placeholder="Contoh: 33123456 (Ketik 'admin' untuk Admin)" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-primary transition">
+            <div class="relative">
+                <i class="fa-regular fa-user input-icon"></i>
+                <input type="text" id="nim" placeholder="NIM / Admin ID" required class="glass-input">
             </div>
 
-            <div>
-                <label class="text-sm font-bold text-slate-800 block mb-1">Kata Sandi</label>
-                <input type="password" id="password" placeholder="********" required class="w-full p-3 border-2 border-slate-300 rounded-lg outline-none focus:border-primary transition">
+            <div class="relative">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <input type="password" id="password" placeholder="Password" required class="glass-input">
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full p-3 mt-2 bg-primary hover-bg-primary text-white rounded-lg font-bold transition shadow-lg">
-                Masuk Sistem
-            </button>
+            <div class="flex items-center justify-between mt-2 text-xs text-gray-400">
+                <label id="termsWrapper" class="hidden items-center gap-2 cursor-pointer hover:text-white transition">
+                    <input type="checkbox" id="terms" class="rounded bg-transparent border-white">
+                    <span>Accept terms & rules</span>
+                </label>
+                <button type="button" id="btnLupaSandi" onclick="bukaModalLupaSandi()" class="hover:text-white transition ml-auto border-b border-white/30 pb-0.5">Lupa Password?</button>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn-submit">Masuk ke Sistem <i class="fa-solid fa-arrow-right"></i></button>
         </form>
+    </div>
+
+    <!-- Footer Copyright -->
+    <div class="absolute bottom-6 text-center w-full text-xs text-gray-500 font-light tracking-[0.2em] uppercase z-10">
+        &copy; 2026 Yusuf & Fitra | Fitra Luqmanul Safa
+    </div>
+
+    <!-- MODAL LUPA SANDI -->
+    <div id="modalLupaSandi" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center z-[100] px-4 transition-all">
+        <div class="perfect-blur p-10 max-w-sm w-full relative text-white">
+            <button onclick="tutupModalLupaSandi()" class="absolute top-6 right-6 text-gray-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            
+            <div id="langkah1" class="block">
+                <h3 class="text-xl font-semibold mb-2">Reset Password</h3>
+                <p class="text-xs text-gray-400 mb-8 font-light">Masukkan NIM Anda untuk verifikasi identitas.</p>
+                <input type="text" id="nimOTP" placeholder="Masukkan ID (NIM)" class="w-full bg-transparent border-b border-white/30 text-white padding-2 mb-8 outline-none focus:border-white">
+                <button onclick="kirimKodeOTP()" class="btn-submit">Kirim Kode</button>
+            </div>
+
+            <div id="langkah2" class="hidden">
+                <h3 class="text-xl font-semibold mb-2">Verifikasi OTP</h3>
+                <p class="text-xs text-gray-400 mb-8 font-light">Simulasi: Ketik <span class="bg-white/20 px-1 rounded text-white">123456</span></p>
+                <input type="text" maxlength="6" id="inputOTP" class="w-full bg-transparent border-b border-white/30 text-white text-center text-2xl tracking-[0.5em] mb-8 outline-none focus:border-white">
+                <button onclick="verifikasiOTP()" class="btn-submit">Verifikasi</button>
+            </div>
+
+            <div id="langkah3" class="hidden">
+                <h3 class="text-xl font-semibold mb-2">Password Baru</h3>
+                <p class="text-xs text-gray-400 mb-8 font-light">Verifikasi berhasil. Buat kata sandi baru Anda.</p>
+                <input type="password" id="sandiBaru" placeholder="Password Baru" class="w-full bg-transparent border-b border-white/30 text-white padding-2 mb-8 outline-none focus:border-white">
+                <button onclick="simpanSandiBaru()" class="btn-submit">Simpan Password</button>
+            </div>
+        </div>
     </div>
 
     <script>
         let currentMode = 'login';
+        let otpRahasia = "123456"; 
+        let tempNimReset = "";
         
-        // Inisialisasi Database Lokal
+        // Inisialisasi Database User Lokal
         if (!localStorage.getItem('lostFoundDB')) {
             localStorage.setItem('lostFoundDB', JSON.stringify([]));
         }
 
-        const ADMIN_CREDENTIALS = { id: 'admin', nama: 'Administrator Pusat', password: 'admin' };
+        const ADMIN_CREDENTIALS = { id: 'admin', nama: 'Administrator', password: 'admin' };
 
-        function switchTab(mode) {
+        function setMode(mode) {
             currentMode = mode;
-            const nameField = document.getElementById('nameField');
             const submitBtn = document.getElementById('submitBtn');
-            const tabLogin = document.getElementById('tabLogin');
-            const tabRegister = document.getElementById('tabRegister');
+            const registerFields = document.getElementById('registerFields');
+            const btnLupaSandi = document.getElementById('btnLupaSandi');
+            const termsWrapper = document.getElementById('termsWrapper');
+            
+            document.getElementById('tabLogin').classList.remove('active');
+            document.getElementById('tabRegister').classList.remove('active');
             
             document.getElementById('alertMsg').classList.add('hidden');
             document.getElementById('authForm').reset();
 
             if (mode === 'register') {
-                nameField.classList.remove('hidden');
+                document.getElementById('tabRegister').classList.add('active');
+                submitBtn.innerHTML = 'Buat Akun <i class="fa-solid fa-user-plus"></i>';
+                registerFields.classList.remove('hidden');
+                registerFields.classList.add('flex');
                 document.getElementById('nama').required = true;
-                submitBtn.innerHTML = "Daftarkan Akun";
-                tabRegister.classList.add('text-primary', 'border-b-4', 'border-primary');
-                tabRegister.classList.remove('text-slate-400');
-                tabLogin.classList.remove('text-primary', 'border-b-4', 'border-primary');
-                tabLogin.classList.add('text-slate-400');
+                document.getElementById('nohp').required = true;
+                btnLupaSandi.classList.add('hidden');
+                termsWrapper.classList.remove('hidden');
+                termsWrapper.classList.add('flex');
             } else {
-                nameField.classList.add('hidden');
+                document.getElementById('tabLogin').classList.add('active');
+                submitBtn.innerHTML = 'Masuk ke Sistem <i class="fa-solid fa-arrow-right"></i>';
+                registerFields.classList.add('hidden');
+                registerFields.classList.remove('flex');
                 document.getElementById('nama').required = false;
-                submitBtn.innerHTML = "Masuk Sistem";
-                tabLogin.classList.add('text-primary', 'border-b-4', 'border-primary');
-                tabLogin.classList.remove('text-slate-400');
-                tabRegister.classList.remove('text-primary', 'border-b-4', 'border-primary');
-                tabRegister.classList.add('text-slate-400');
+                document.getElementById('nohp').required = false;
+                btnLupaSandi.classList.remove('hidden');
+                termsWrapper.classList.add('hidden');
+                termsWrapper.classList.remove('flex');
             }
         }
 
-        function showAlert(message, type) {
+        function showAlert(message, isSuccess = false) {
             const alertMsg = document.getElementById('alertMsg');
-            alertMsg.className = `p-3 rounded-lg mb-5 text-center text-sm font-bold block border ${type === 'error' ? 'bg-red-100 text-red-600 border-red-500' : 'bg-green-100 text-green-600 border-green-500'}`;
+            alertMsg.classList.remove('hidden');
             alertMsg.innerHTML = message;
+            alertMsg.style.backgroundColor = isSuccess ? '#4ade80' : '#fff'; // Hijau jika sukses, putih jika error
+            alertMsg.style.color = '#000';
         }
 
         function handleAuth(event) {
@@ -104,33 +220,76 @@
             let users = JSON.parse(localStorage.getItem('lostFoundDB'));
 
             if (currentMode === 'register') {
+                const terms = document.getElementById('terms').checked;
+                if(!terms) return showAlert('Harap setujui syarat & ketentuan.');
+
                 const namaInput = document.getElementById('nama').value.trim();
+                const hpInput = document.getElementById('nohp').value.trim();
                 const isExist = users.find(u => u.nim === nimInput) || nimInput.toLowerCase() === 'admin';
                 
                 if (isExist) {
-                    showAlert('NIM/ID sudah digunakan!', 'error');
+                    showAlert('NIM/ID sudah terdaftar dalam sistem.');
                 } else {
-                    users.push({ nama: namaInput, nim: nimInput, password: passwordInput });
+                    users.push({ nama: namaInput, nohp: hpInput, nim: nimInput, password: passwordInput });
                     localStorage.setItem('lostFoundDB', JSON.stringify(users));
-                    showAlert('Registrasi berhasil! Silakan masuk.', 'success');
-                    setTimeout(() => switchTab('login'), 1500);
+                    showAlert('Registrasi Berhasil! Silakan Sign In.', true);
+                    setTimeout(() => setMode('login'), 2000);
                 }
             } else {
+                // Bypass Admin
                 if (nimInput === ADMIN_CREDENTIALS.id && passwordInput === ADMIN_CREDENTIALS.password) {
-                    // Set sesi admin dan redirect ke halaman admin
                     sessionStorage.setItem('activeUser', JSON.stringify({ nama: ADMIN_CREDENTIALS.nama, role: 'admin' }));
                     window.location.href = 'admin-dashboard.html';
                     return;
                 }
-
+                // Verifikasi Mahasiswa
                 const student = users.find(u => u.nim === nimInput && u.password === passwordInput);
                 if (student) {
-                    // Set sesi mahasiswa dan redirect ke halaman utama
                     sessionStorage.setItem('activeUser', JSON.stringify({ nama: student.nama, nim: student.nim, role: 'mahasiswa' }));
                     window.location.href = 'PBL.html';
                 } else {
-                    showAlert('NIM atau Kata Sandi salah!', 'error');
+                    showAlert('NIM atau Password tidak cocok.');
                 }
+            }
+        }
+
+        // FUNGSI LUPA SANDI
+        function bukaModalLupaSandi() {
+            document.getElementById('modalLupaSandi').classList.remove('hidden');
+            document.getElementById('modalLupaSandi').classList.add('flex');
+            document.getElementById('langkah1').classList.remove('hidden');
+            document.getElementById('langkah2').classList.add('hidden');
+            document.getElementById('langkah3').classList.add('hidden');
+        }
+        function tutupModalLupaSandi() {
+            document.getElementById('modalLupaSandi').classList.add('hidden');
+            document.getElementById('modalLupaSandi').classList.remove('flex');
+        }
+        function kirimKodeOTP() {
+            const nimOTP = document.getElementById('nimOTP').value.trim();
+            if(!nimOTP) return alert("NIM harus diisi.");
+            let users = JSON.parse(localStorage.getItem('lostFoundDB'));
+            if(!users.find(u => u.nim === nimOTP)) return alert("ID Tidak Ditemukan di Database.");
+            tempNimReset = nimOTP;
+            document.getElementById('langkah1').classList.add('hidden');
+            document.getElementById('langkah2').classList.remove('hidden');
+        }
+        function verifikasiOTP() {
+            if(document.getElementById('inputOTP').value.trim() === otpRahasia) {
+                document.getElementById('langkah2').classList.add('hidden');
+                document.getElementById('langkah3').classList.remove('hidden');
+            } else alert("Kode OTP Salah.");
+        }
+        function simpanSandiBaru() {
+            const sandiBaru = document.getElementById('sandiBaru').value;
+            if(!sandiBaru) return alert("Password harus diisi.");
+            let users = JSON.parse(localStorage.getItem('lostFoundDB'));
+            let userIndex = users.findIndex(u => u.nim === tempNimReset);
+            if(userIndex !== -1) {
+                users[userIndex].password = sandiBaru;
+                localStorage.setItem('lostFoundDB', JSON.stringify(users));
+                alert("Password Berhasil Diperbarui.");
+                tutupModalLupaSandi();
             }
         }
     </script>

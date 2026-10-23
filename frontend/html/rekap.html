@@ -3,57 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekapitulasi - FindIt Found</title>
-    <link rel="stylesheet" href="../css/PBL.css">
+    <title>Rekap Data - FindIt</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: url('images/bgpoltek.jpeg') no-repeat center center fixed; background-size: cover; color: white; }
+        .estareal-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(20,20,20,0.85) 0%, rgba(10,10,10,0.95) 100%); z-index: -2; }
+        .perfect-blur { background: rgba(30, 30, 30, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.6); border-radius: 4px;}
+        .glass-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 10px 0; outline: none; transition: 0.3s; font-size: 0.95rem; }
+        .glass-input:focus { border-bottom: 1px solid white; }
+        .glass-input option { background: #1a1a1a; color: white; }
+    </style>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen items-center justify-center p-6">
+    <div class="bg-overlay"></div>
+    <a href="PBL.html" class="absolute top-8 left-8 tracking-widest text-sm font-medium hover:text-gray-300 transition"><i class="fa-solid fa-arrow-left"></i> BERANDA</a>
+    
+    <div class="text-center mb-12">
+        <h1 class="text-4xl font-medium tracking-wide mb-2">Statistik Sistem</h1>
+        <p class="text-gray-400 font-light">Rekapitulasi total laporan yang diproses FindIt.</p>
+    </div>
 
-    <nav class="navbar shadow-md">
-        <div class="container">
-            <a href="PBL.html" class="logo">FindIt FOUND</a>
-            <ul class="nav-links">
-                <li><a href="PBL.html">Beranda</a></li>
-                <li><a href="daftar-laporan.html">Daftar Laporan</a></li>
-                <li><a href="lapor.html">Buat Laporan</a></li>
-                <li><a href="rekap.html" class="text-[#cdbc0b]">Rekap Data</a></li>
-            </ul>
+    <div class="flex flex-wrap justify-center gap-8 w-full max-w-4xl">
+        <div class="glass-panel p-10 w-full md:w-64 text-center rounded-2xl shadow-xl border-t-2 border-t-red-500">
+            <h3 id="totalHilang" class="text-5xl font-bold text-white mb-2">0</h3>
+            <p class="text-xs tracking-widest text-red-400 uppercase">Barang Hilang</p>
         </div>
-    </nav>
-
-    <section class="flex-grow pt-28 pb-10">
-        <div class="container mx-auto max-w-4xl text-center">
-            <h2 class="text-3xl font-bold text-[#050560] mb-2">Rekapitulasi Kasus Penyelesaian</h2>
-            <p class="text-gray-500 mb-10">Statistik barang hilang dan ditemukan yang tercatat di sistem saat ini.</p>
-            
-            <div class="flex flex-wrap justify-center gap-6">
-                <div class="bg-white border-t-4 border-red-500 rounded-xl p-8 shadow-lg w-full md:w-64 transform hover:scale-105 transition">
-                    <h3 id="totalHilang" class="text-5xl font-extrabold text-red-500 mb-2">0</h3>
-                    <p class="text-slate-600 font-bold">Total Barang Hilang</p>
-                </div>
-                
-                <div class="bg-white border-t-4 border-green-500 rounded-xl p-8 shadow-lg w-full md:w-64 transform hover:scale-105 transition">
-                    <h3 id="totalDitemukan" class="text-5xl font-extrabold text-green-500 mb-2">0</h3>
-                    <p class="text-slate-600 font-bold">Total Barang Ditemukan</p>
-                </div>
-                
-                <div class="bg-[#030c3b] rounded-xl p-8 shadow-lg w-full md:w-64 transform hover:scale-105 transition">
-                    <h3 id="totalSelesai" class="text-5xl font-extrabold text-[#cdbc0b] mb-2">0</h3>
-                    <p class="text-white font-bold">Kasus Selesai / Ditutup</p>
-                </div>
-            </div>
-            
-            <div class="mt-12">
-                <button onclick="window.print()" class="bg-[#050560] hover:bg-[#cdbc0b] hover:text-[#050560] text-white font-bold py-3 px-8 rounded-full shadow-lg transition">🖨️ Cetak Laporan (PDF)</button>
-            </div>
+        <div class="glass-panel p-10 w-full md:w-64 text-center rounded-2xl shadow-xl border-t-2 border-t-green-500">
+            <h3 id="totalDitemukan" class="text-5xl font-bold text-white mb-2">0</h3>
+            <p class="text-xs tracking-widest text-green-400 uppercase">Ditemukan</p>
         </div>
-    </section>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 Muhammad Yusuf Fauzi dan Fitra Luqmanul Safa. All rights reserved.</p>
+        <div class="glass-panel p-10 w-full md:w-64 text-center rounded-2xl shadow-xl border-t-2 border-t-blue-500">
+            <h3 id="totalSelesai" class="text-5xl font-bold text-white mb-2">0</h3>
+            <p class="text-xs tracking-widest text-blue-400 uppercase">Kasus Selesai</p>
         </div>
-    </footer>
+    </div>
 
     <script src="../js/PBL.js"></script>
 </body>
