@@ -3,124 +3,514 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Lost & Found</title>
+    <title>Dashboard Admin - Sistem Laporan FindIt</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #areaCetakTabel, #areaCetakTabel * { visibility: visible; }
+            #areaCetakTabel { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans h-screen overflow-hidden flex relative">
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
 
-    <!-- SIDEBAR ADMIN -->
-    <aside class="w-64 bg-[#030c3b] text-white flex flex-col shadow-2xl z-20 hidden md:flex">
-        <div class="p-6 border-b border-gray-700">
-            <h1 class="text-2xl font-extrabold text-amber-400 tracking-wider">L&F ADMIN</h1>
-            <p class="text-xs text-gray-400 mt-1">Sistem Keamanan Kampus</p>
+    <!-- TOPBAR / HEADER -->
+    <nav class="bg-[#030c3b] p-4 text-white shadow-md no-print fixed top-0 left-0 right-0 z-40 h-16 flex items-center justify-between px-6">
+        <div class="flex items-center gap-3">
+            <!-- LOGO PBL KITA DI POJOK KIRI ATAS -->
+            <img src="Logo Pbl FindIt.jpg" alt="Logo PBL FindIt" class="w-10 h-10 rounded-full object-cover border border-slate-300 shadow">
+            <div>
+                <h1 class="font-bold text-lg leading-none text-white">Sistem Laporan FindIt</h1>
+                <span class="text-xs text-amber-400">Panel Kontrol Admin</span>
+            </div>
         </div>
-        <nav class="flex-grow p-4 flex flex-col gap-2 mt-4">
-            <button onclick="switchAdminTab('Antrean')" class="flex items-center text-left w-full p-3 bg-white/10 hover:bg-white/20 rounded-lg transition font-semibold text-sm">
-                Antrean & Validasi
+
+        <div class="flex items-center gap-4 text-sm">
+            <div class="hidden sm:flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+                <i class="fa-solid fa-user-shield text-amber-400"></i>
+                <span>Petugas: <b id="adminName" class="text-amber-300">Admin Pusat</b></span>
+            </div>
+            <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-bold shadow flex items-center gap-1 transition">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
             </button>
-            <button onclick="switchAdminTab('Berita')" class="flex items-center text-left w-full p-3 bg-white/10 hover:bg-white/20 rounded-lg transition font-semibold text-sm">
-                Berita Utama (Live)
-            </button>
-        </nav>
-        <div class="p-6 border-t border-gray-700">
-            <div class="text-sm mb-3">Petugas: <b id="adminName" class="text-amber-400">Admin</b></div>
-            <button onclick="sessionStorage.removeItem('activeUser'); window.location.href='login.html';" class="w-full bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg font-bold shadow text-sm transition text-white">Log Out</button>
         </div>
-    </aside>
+    </nav>
 
-    <!-- KONTEN UTAMA -->
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto">
-        <header class="md:hidden bg-[#030c3b] text-white p-4 flex justify-between items-center shadow-md">
-            <span class="font-bold text-amber-400">L&F ADMIN</span>
-            <button onclick="sessionStorage.removeItem('activeUser'); window.location.href='login.html';" class="text-xs bg-red-500 px-3 py-1 rounded text-white">Logout</button>
-        </header>
+    <!-- MAIN CONTAINER WITH SIDEBAR -->
+    <div class="flex pt-16 min-h-screen">
+        
+        <!-- SIDEBAR MENU -->
+        <aside class="w-64 bg-slate-900 text-slate-300 flex-shrink-0 no-print hidden md:block min-h-[calc(100vh-4rem)] p-4 border-r border-slate-800">
+            <div class="mb-6 px-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Menu Utama
+            </div>
+            <nav class="space-y-1">
+                <button onclick="switchTab('halaman-utama')" id="nav-halaman-utama" class="sidebar-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-amber-500 text-[#030c3b] font-bold shadow">
+                    <i class="fa-solid fa-house text-lg"></i>
+                    <span>Halaman Utama</span>
+                </button>
+                
+                <button onclick="switchTab('tambahkan-berita')" id="nav-tambahkan-berita" class="sidebar-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-[#030c3b] fa-newspaper text-lg"></i>
+                    <span>Tambahkan Berita</span>
+                </button>
 
-        <div class="p-6 md:p-10 flex-grow">
-            
-            <!-- TAB 1: ANTREAN & VERIFIKASI -->
-            <div id="tabAntrean" class="block">
-                <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <button onclick="switchTab('setting')" id="nav-setting" class="sidebar-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                    <span>Setting</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- KONTEN UTAMA -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto">
+
+            <!-- ================= TAB 1: HALAMAN UTAMA ================= -->
+            <section id="tab-halaman-utama" class="tab-content space-y-8">
+                
+                <!-- KARTU STATISTIK -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 no-print">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-blue-500 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-slate-500 font-semibold text-xs uppercase tracking-wider">Total Laporan</h3>
+                            <p id="statTotal" class="text-3xl font-black text-[#030c3b] mt-1">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-amber-500 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-slate-500 font-semibold text-xs uppercase tracking-wider">Menunggu Verifikasi</h3>
+                            <p id="statPending" class="text-3xl font-black text-amber-600 mt-1">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 border-l-4 border-l-green-500 flex items-center justify-between">
+                        <div>
+                            <h3 class="text-slate-500 font-semibold text-xs uppercase tracking-wider">Laporan Valid</h3>
+                            <p id="statValid" class="text-3xl font-black text-green-600 mt-1">0</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN BERITA UTAMA (SEPERTI YANG DILIHAT MAHASISWA) -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 no-print space-y-4">
+                    <div class="flex items-center justify-between border-b pb-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-[#030c3b] flex items-center gap-2">
+                                <i class="fa-solid fa-newspaper text-amber-500"></i>
+                                Tampilan Berita Utama (Mahasiswa View)
+                            </h2>
+                            <p class="text-xs text-slate-500">Prinjau berita PBL yang dipublikasikan dan ditampilkan di portal mahasiswa.</p>
+                        </div>
+                        <button onclick="switchTab('tambahkan-berita')" class="text-xs bg-amber-500 hover:bg-amber-600 text-[#030c3b] px-3 py-2 rounded-lg font-bold">
+                            + Tambah Berita Baru
+                        </button>
+                    </div>
+
+                    <!-- GRID BERITA UTAMA -->
+                    <div id="beritaMahasiswaGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                        <!-- Data berita diprogram lewat JS -->
+                    </div>
+                </div>
+
+                <!-- KONTROL PENCARIAN & TABEL LAPORAN MAHASISWA -->
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
+                        <div>
+                            <h2 class="text-base font-bold text-[#030c3b]">Daftar Akun Pelapor & Laporan Masuk</h2>
+                            <p class="text-xs text-slate-500">Kelola validasi status laporan, beri pesan, atau kelola akun mahasiswa pelapor.</p>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                            <input type="text" id="adminSearch" oninput="renderTable()" placeholder="Cari Nama, NIM, atau Barang..." class="p-2 px-3 border rounded-xl outline-none focus:ring-2 focus:ring-[#030c3b] text-sm w-full md:w-64">
+                            <select id="adminFilter" onchange="renderTable()" class="p-2 border rounded-xl outline-none text-sm bg-slate-50">
+                                <option value="Semua">Semua Status</option>
+                                <option value="Pending">Menunggu (Pending)</option>
+                                <option value="Valid">Valid</option>
+                                <option value="Selesai">Selesai</option>
+                            </select>
+                            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-xl text-sm font-bold shadow">
+                                🖨️ Cetak PDF
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TABEL KELOLA LAPORAN & AKUN PELAPOR -->
+                    <div id="areaCetakTabel" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-800 text-white">
+                                    <tr>
+                                        <th class="p-4">Akun Pelapor (NIM)</th>
+                                        <th class="p-4">Laporan & Barang</th>
+                                        <th class="p-4">Lokasi Kejadian</th>
+                                        <th class="p-4">Foto / Berkas</th>
+                                        <th class="p-4">Status</th>
+                                        <th class="p-4 text-center no-print">Tindakan Laporan & Pelapor</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelVerifikasiAdmin" class="divide-y divide-slate-100">
+                                    <!-- Diisi lewat JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ================= TAB 2: TAMBAHKAN BERITA ================= -->
+            <section id="tab-tambahkan-berita" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto">
+                    <h2 class="text-xl font-bold text-[#030c3b] mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-square-plus text-amber-500"></i> Tambahkan Berita PBL
+                    </h2>
+                    <p class="text-xs text-slate-500 mb-6">Publikasikan pengumuman atau berita terbaru untuk dilihat seluruh mahasiswa.</p>
+
+                    <form id="formTambahBerita" onsubmit="simpanBerita(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Judul Berita</label>
+                            <input type="text" id="judulBerita" required placeholder="Contoh: Pemutakhiran Jadwal Pengambilan Barang Lost & Found" class="w-full p-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-[#030c3b] text-sm">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kategori / Tag</label>
+                                <input type="text" id="kategoriBerita" placeholder="Contoh: Pengumuman, PBL 2026" class="w-full p-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-[#030c3b] text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">URL Gambar Berita</label>
+                                <input type="url" id="gambarBerita" placeholder="https://images.unsplash.com/photo-..." class="w-full p-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-[#030c3b] text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Isi Berita</label>
+                            <textarea id="isiBerita" rows="5" required placeholder="Tuliskan detail isi berita di sini..." class="w-full p-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-[#030c3b] text-sm"></textarea>
+                        </div>
+
+                        <div class="pt-2 flex justify-end gap-3">
+                            <button type="button" onclick="switchTab('halaman-utama')" class="px-4 py-2 border rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100">Batal</button>
+                            <button type="submit" class="px-6 py-2 bg-[#030c3b] hover:bg-slate-800 text-white rounded-xl text-sm font-bold shadow">Publikasikan Berita</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ================= TAB 3: SETTING ================= -->
+            <section id="tab-setting" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 max-w-3xl mx-auto space-y-6">
                     <div>
-                        <h2 class="text-3xl font-bold text-[#030c3b]">Manajemen Laporan</h2>
-                        <p class="text-sm text-gray-500">Terapkan verifikasi ketat sebelum menerbitkan laporan mahasiswa.</p>
+                        <h2 class="text-xl font-bold text-[#030c3b] flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-amber-500"></i> Pengaturan Dashboard PBL
+                        </h2>
+                        <p class="text-xs text-slate-500">Atur preferensi sistem, data admin, dan konfigurasi umum aplikasi.</p>
                     </div>
-                    <input type="text" id="adminSearch" placeholder="Cari Pelapor, NIM, atau Barang..." class="w-full md:w-80 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-[#030c3b] shadow-sm text-sm">
-                </div>
 
-                <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-slate-100 border-b text-slate-600 uppercase text-xs font-bold tracking-wider">
-                                <tr>
-                                    <th class="p-4">Pelapor</th>
-                                    <th class="p-4">Barang & Kategori</th>
-                                    <th class="p-4">Lokasi & Waktu</th>
-                                    <th class="p-4 text-center">Status</th>
-                                    <th class="p-4 text-center">Tindakan Admin</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelVerifikasiAdmin"></tbody>
-                        </table>
-                    </div>
+                    <form onsubmit="simpanSetting(event)" class="space-y-4 border-t pt-4">
+                        <h3 class="font-bold text-sm text-slate-800">Profil Administrator</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Nama Petugas Admin</label>
+                                <input type="text" id="settingNamaAdmin" value="Admin Pusat" class="w-full p-2.5 border rounded-xl outline-none text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Email Kontak</label>
+                                <input type="email" id="settingEmailAdmin" value="admin.pbl@polibatam.ac.id" class="w-full p-2.5 border rounded-xl outline-none text-sm">
+                            </div>
+                        </div>
+
+                        <h3 class="font-bold text-sm text-slate-800 border-t pt-4">Sistem & Otomatisasi</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" checked class="w-4 h-4 text-[#030c3b] rounded">
+                                <span class="text-sm text-slate-700">Kirim notifikasi pesan otomatis saat status laporan divalidasi</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" checked class="w-4 h-4 text-[#030c3b] rounded">
+                                <span class="text-sm text-slate-700">Izinkan mahasiswa langsung melihat laporan terverifikasi</span>
+                            </label>
+                        </div>
+
+                        <div class="pt-4 border-t flex justify-end">
+                            <button type="submit" class="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-[#030c3b] font-bold rounded-xl text-sm shadow">
+                                Simpan Pengaturan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL KIRIM PESAN KE PELAPOR -->
+    <div id="modalPesan" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane text-blue-600"></i> Kirim Pesan ke Pelapor
+                </h3>
+                <button onclick="closeModalPesan()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 mb-1">Penerima:</p>
+                <div class="p-2.5 bg-slate-100 rounded-xl text-sm font-semibold text-slate-800" id="modalTargetPelapor">
+                    Nama Pelapor (NIM)
                 </div>
             </div>
-
-            <!-- TAB 2: BERITA TERKINI (Preview Publik) -->
-            <div id="tabBerita" class="hidden">
-                <div class="mb-6">
-                    <h2 class="text-3xl font-bold text-[#030c3b]">Berita Utama (Live)</h2>
-                    <p class="text-sm text-gray-500">Daftar laporan terverifikasi yang saat ini tayang dan dapat dilihat oleh semua mahasiswa.</p>
-                </div>
-                <input type="text" id="globalSearch" placeholder="Cari berita berdasarkan Kategori, Nama, atau Lokasi..." class="w-full p-3 border rounded-lg shadow-sm text-sm mb-6 outline-none focus:ring-2 focus:ring-blue-500">
-                
-                <div id="feedBeritaTerkini" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Isi Pesan / Instruksi</label>
+                <textarea id="pesanKePelapor" rows="4" placeholder="Tulis pesan untuk pelapor (misal: Silakan ambil barang di Ruang Sekretariat PBL dengan membawa KTM)..." class="w-full p-2.5 border rounded-xl outline-none focus:ring-2 focus:ring-[#030c3b] text-sm"></textarea>
             </div>
-
-        </div>
-    </main>
-
-    <!-- MODAL VERIFIKASI KETAT (STRICT VALIDATION) -->
-    <div id="modalVerifikasi" class="hidden fixed inset-0 bg-black/70 z-50 justify-center items-center backdrop-blur-sm">
-        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-fade-in-up">
-            <div class="bg-[#030c3b] p-4 text-white text-center">
-                <h3 class="text-xl font-bold">Otorisasi Keamanan Laporan</h3>
-            </div>
-            <div class="p-6">
-                <div class="mb-4 bg-gray-50 p-4 border rounded-lg text-sm text-gray-700">
-                    <p><b>Pelapor:</b> <span id="mv_pelapor">-</span></p>
-                    <p><b>Barang:</b> <span id="mv_barang">-</span></p>
-                    <p class="mt-2 text-xs text-gray-500"><b>Ciri Khusus:</b> <span id="mv_ciri">-</span></p>
-                </div>
-                
-                <div class="flex flex-col gap-3 mb-6">
-                    <label class="flex items-center gap-3 text-sm font-semibold cursor-pointer">
-                        <input type="checkbox" id="chk_bukti" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        Saya sudah mengecek foto bukti file dan gambar sesuai.
-                    </label>
-                    <label class="flex items-center gap-3 text-sm font-semibold cursor-pointer">
-                        <input type="checkbox" id="chk_spam" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                        Laporan ini valid dan bukan merupakan indikasi SPAM palsu.
-                    </label>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-xs font-bold text-gray-700 mb-2 uppercase">PIN Otorisasi Admin <span class="text-red-500">*</span></label>
-                    <input type="password" id="admin_pin" placeholder="Masukkan 6 Digit PIN Admin (123456)" class="w-full p-3 border-2 border-gray-300 rounded-lg text-center tracking-widest font-bold outline-none focus:border-blue-600 transition">
-                </div>
-
-                <div class="flex gap-3">
-                    <button onclick="tutupModalVerifikasi()" class="w-1/2 p-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-lg transition">Batalkan</button>
-                    <button onclick="konfirmasiVerifikasi()" class="w-1/2 p-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition">Terbitkan Laporan</button>
-                </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModalPesan()" class="px-4 py-2 border rounded-xl text-xs font-semibold text-slate-600">Batal</button>
+                <button onclick="kirimPesanProses()" class="px-5 py-2 bg-[#030c3b] hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow">Kirim Pesan</button>
             </div>
         </div>
     </div>
 
-    <script src="../js/PBL.js"></script>
+    <!-- JAVASCRIPT AKSI & LOGIKA DASHBOARD -->
     <script>
-        const user = JSON.parse(sessionStorage.getItem('activeUser'));
-        if (!user || user.role !== 'admin') window.location.href = 'login.html';
-        else document.getElementById('adminName').innerText = user.nama;
+        // DATA DUMMY / INITIAL STATE
+        let laporans = JSON.parse(localStorage.getItem('pbl_laporan')) || [
+            { id: 1, nama: 'Ahmad Rizky', nim: '3312301001', barang: 'Laptop Asus ROG Black', kategori: 'Elektronik', lokasi: 'Gedung Utama Lt. 2', foto: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=200', status: 'Pending' },
+            { id: 2, nama: 'Siti Sarah', nim: '3312301045', barang: 'KTM & Dompet Cokelat', kategori: 'Dokumen/Kartu', lokasi: 'Kantin PBL', foto: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=200', status: 'Valid' },
+            { id: 3, nama: 'Budi Santoso', nim: '3312301088', barang: 'Kunci Motor Honda', kategori: 'Lainnya', lokasi: 'Parkiran Barat', foto: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?w=200', status: 'Selesai' }
+        ];
+
+        let beritaList = JSON.parse(localStorage.getItem('pbl_berita')) || [
+            { id: 1, judul: 'Pengambilan Barang Temuan Periode Maret 2026', tanggal: '2026-03-20', kategori: 'Pengumuman', isi: 'Bagi mahasiswa yang merasa kehilangan barang elektronik di perpustakaan dapat mendatangi pos PBL.', gambar: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400' },
+            { id: 2, judul: 'Sistem Integrasi Laporan Hilang PBL Resmi Beroperasi', tanggal: '2026-03-15', kategori: 'Sistem', isi: 'Laporan kehilangan sekarang dapat dipantau langsung statusnya oleh admin dan pelapor secara real-time.', gambar: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400' }
+        ];
+
+        let activePelaporTarget = null;
+
+        // AUTH CHECK
+        const activeUser = JSON.parse(sessionStorage.getItem('activeUser')) || { nama: 'Admin Pusat', role: 'admin' };
+        document.getElementById('adminName').innerText = activeUser.nama || 'Admin Pusat';
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('activeUser');
+            window.location.href = 'login.html';
+        }
+
+        // TAB SWITCHING
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.sidebar-btn').forEach(btn => {
+                btn.className = 'sidebar-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium hover:bg-slate-800 hover:text-white transition';
+            });
+            
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if(activeBtn) {
+                activeBtn.className = 'sidebar-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-amber-500 text-[#030c3b] shadow';
+            }
+        }
+
+        // RENDER TABLE LAPORAN & AKUN PELAPOR
+        function renderTable() {
+            const tbody = document.getElementById('tabelVerifikasiAdmin');
+            const search = document.getElementById('adminSearch').value.toLowerCase();
+            const filter = document.getElementById('adminFilter').value;
+
+            tbody.innerHTML = '';
+
+            let filtered = laporans.filter(item => {
+                const matchSearch = item.nama.toLowerCase().includes(search) || 
+                                    item.nim.toLowerCase().includes(search) || 
+                                    item.barang.toLowerCase().includes(search);
+                const matchFilter = filter === 'Semua' || item.status === filter;
+                return matchSearch && matchFilter;
+            });
+
+            // Update statistik
+            document.getElementById('statTotal').innerText = laporans.length;
+            document.getElementById('statPending').innerText = laporans.filter(l => l.status === 'Pending').length;
+            document.getElementById('statValid').innerText = laporans.filter(l => l.status === 'Valid').length;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">Tidak ada data laporan atau pelapor yang sesuai.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                let badgeClass = 'bg-amber-100 text-amber-700 border-amber-300';
+                if(item.status === 'Valid') badgeClass = 'bg-blue-100 text-blue-700 border-blue-300';
+                if(item.status === 'Selesai') badgeClass = 'bg-green-100 text-green-700 border-green-300';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition border-b">
+                        <td class="p-4 font-semibold text-slate-800">
+                            <div>${item.nama}</div>
+                            <span class="text-xs text-slate-500 font-mono">NIM: ${item.nim}</span>
+                        </td>
+                        <td class="p-4">
+                            <div class="font-bold text-slate-800">${item.barang}</div>
+                            <span class="text-xs text-slate-400">${item.kategori || 'Umum'}</span>
+                        </td>
+                        <td class="p-4 text-slate-600 text-xs">${item.lokasi}</td>
+                        <td class="p-4">
+                            <img src="${item.foto}" class="w-12 h-12 rounded-lg object-cover border shadow-sm" alt="Foto">
+                        </td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 text-xs font-bold rounded-full border ${badgeClass}">${item.status}</span>
+                        </td>
+                        <td class="p-4 text-center no-print space-y-1">
+                            <!-- TOMBOL VALIDASI, SELESAI, HAPUS LAPORAN -->
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="updateStatus(${item.id}, 'Valid')" title="Validasi Laporan" class="px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold">
+                                    <i class="fa-solid fa-check"></i> Validasi
+                                </button>
+                                <button onclick="updateStatus(${item.id}, 'Selesai')" title="Selesaikan" class="px-2 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-bold">
+                                    Selesai
+                                </button>
+                                <button onclick="hapusLaporan(${item.id})" title="Hapus Laporan" class="px-2 py-1 bg-slate-200 hover:bg-red-100 text-red-600 rounded text-xs font-bold">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                            <!-- FITUR AKUN PELAPOR: KAN PESAN & HAPUS AKUN -->
+                            <div class="flex items-center justify-center gap-1 pt-1">
+                                <button onclick="openModalPesan('${item.nama}', '${item.nim}')" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-[#030c3b] rounded text-xs font-bold w-full">
+                                    <i class="fa-solid fa-envelope"></i> Pesan
+                                </button>
+                                <button onclick="hapusAkunPelapor('${item.nama}', '${item.nim}')" class="px-2 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded text-xs font-bold whitespace-nowrap">
+                                    Hapus Akun
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            localStorage.setItem('pbl_laporan', JSON.stringify(laporans));
+        }
+
+        // TAMPILAN BERITA UTAMA (MIRIP VIEW MAHASISWA)
+        function renderBeritaMahasiswa() {
+            const container = document.getElementById('beritaMahasiswaGrid');
+            container.innerHTML = '';
+
+            beritaList.forEach(b => {
+                container.innerHTML += `
+                    <div class="bg-slate-50 rounded-xl overflow-hidden border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <img src="${b.gambar}" class="w-full h-36 object-cover" alt="Berita">
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                                    <span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded">${b.kategori}</span>
+                                    <span>${b.tanggal}</span>
+                                </div>
+                                <h3 class="font-bold text-slate-800 text-sm mb-2 line-clamp-2">${b.judul}</h3>
+                                <p class="text-xs text-slate-600 line-clamp-3 mb-4">${b.isi}</p>
+                            </div>
+                            <button onclick="hapusBerita(${b.id})" class="text-xs text-red-600 font-bold hover:underline self-start">
+                                <i class="fa-solid fa-trash"></i> Hapus Berita Ini
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            localStorage.setItem('pbl_berita', JSON.stringify(beritaList));
+        }
+
+        // AKSI TANGGAPAN & LAPORAN
+        function updateStatus(id, newStatus) {
+            const index = laporans.findIndex(l => l.id === id);
+            if(index !== -1) {
+                laporans[index].status = newStatus;
+                renderTable();
+                alert(`Status laporan berhasil diubah menjadi "${newStatus}"!`);
+            }
+        }
+
+        function hapusLaporan(id) {
+            if(confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
+                laporans = laporans.filter(l => l.id !== id);
+                renderTable();
+            }
+        }
+
+        // AKSI AKUN PELAPOR
+        function openModalPesan(nama, nim) {
+            activePelaporTarget = { nama, nim };
+            document.getElementById('modalTargetPelapor').innerText = `${nama} (${nim})`;
+            document.getElementById('pesanKePelapor').value = '';
+            document.getElementById('modalPesan').classList.remove('hidden');
+            document.getElementById('modalPesan').classList.add('flex');
+        }
+
+        function closeModalPesan() {
+            document.getElementById('modalPesan').classList.add('hidden');
+            document.getElementById('modalPesan').classList.remove('flex');
+        }
+
+        function kirimPesanProses() {
+            const isi = document.getElementById('pesanKePelapor').value.trim();
+            if(!isi) return alert('Harap isi pesan terlebih dahulu.');
+            
+            alert(`Pesan berhasil dikirimkan ke akun pelapor: ${activePelaporTarget.nama} (${activePelaporTarget.nim})`);
+            closeModalPesan();
+        }
+
+        function hapusAkunPelapor(nama, nim) {
+            if(confirm(`PERINGATAN: Yakin ingin menghapus seluruh akun pelapor atas nama ${nama} (${nim})? Laporan terkait juga akan dibersihkan.`)) {
+                laporans = laporans.filter(l => l.nim !== nim);
+                renderTable();
+                alert(`Akun pelapor ${nama} (${nim}) berhasil dihapus.`);
+            }
+        }
+
+        // SIMPAN BERITA BARU
+        function simpanBerita(e) {
+            e.preventDefault();
+            const judul = document.getElementById('judulBerita').value;
+            const kategori = document.getElementById('kategoriBerita').value || 'Pengumuman';
+            const gambar = document.getElementById('gambarBerita').value || 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400';
+            const isi = document.getElementById('isiBerita').value;
+
+            const newBerita = {
+                id: Date.now(),
+                judul,
+                kategori,
+                gambar,
+                isi,
+                tanggal: new Date().toISOString().split('T')[0]
+            };
+
+            beritaList.unshift(newBerita);
+            renderBeritaMahasiswa();
+            document.getElementById('formTambahBerita').reset();
+            switchTab('halaman-utama');
+            alert('Berita baru berhasil dipublikasikan!');
+        }
+
+        function hapusBerita(id) {
+            if(confirm('Hapus berita ini?')) {
+                beritaList = beritaList.filter(b => b.id !== id);
+                renderBeritaMahasiswa();
+            }
+        }
+
+        function simpanSetting(e) {
+            e.preventDefault();
+            const namaBaru = document.getElementById('settingNamaAdmin').value;
+            document.getElementById('adminName').innerText = namaBaru;
+            alert('Pengaturan dashboard berhasil disimpan!');
+        }
+
+        // INIT LOAD
+        renderTable();
+        renderBeritaMahasiswa();
     </script>
 </body>
 </html>
