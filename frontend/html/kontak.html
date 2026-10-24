@@ -3,30 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - FindIt</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap');
-        body { font-family: 'Space Grotesk', sans-serif; background: url('bgpoltek2.jpeg') no-repeat center center fixed; background-size: cover; color: #fff; }
-        .glass-overlay { background: rgba(10, 12, 20, 0.88); backdrop-filter: blur(10px); min-height: 100vh; display: flex; align-items: center; justify-content: center;}
-        .cyber-input { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 0; outline: none; transition: 0.3s; }
-        .cyber-input:focus { border-color: #2563eb; }
-    </style>
+    <meta name="theme-color" content="#171719">
+    <title>Pusat Bantuan | FindIt Polibatam</title>
+    <link rel="stylesheet" href="../css/PBL.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-<div class="glass-overlay">
-    <div class="w-full max-w-lg p-10 bg-black/40 border border-white/10 rounded-xl backdrop-blur-md">
-        <h2 class="text-2xl tracking-[0.2em] uppercase mb-2 font-light">Transmission <span class="font-bold text-blue-500">Link</span></h2>
-        <p class="text-[10px] text-gray-400 tracking-widest uppercase mb-8 border-l-2 border-blue-600 pl-2">Hubungkan sinyal keluhan Anda ke Admin.</p>
-        
-        <form onsubmit="event.preventDefault(); alert('Transmission Sent.'); window.location.href='PBL.html'" class="flex flex-col gap-6 text-sm">
-            <input type="text" placeholder="Identity (Name/NIM)" required class="w-full cyber-input">
-            <textarea rows="3" placeholder="Message content..." required class="w-full cyber-input resize-none"></textarea>
-            <button type="submit" class="border border-blue-600 text-blue-500 hover:bg-blue-600 hover:text-white py-3 tracking-[0.2em] text-[10px] uppercase mt-4 transition">
-                Send Transmission
-            </button>
-        </form>
-    </div>
+<div class="app-shell">
+    <aside class="sidebar" aria-label="Navigasi utama">
+        <a class="brand-mark" href="PBL.html" aria-label="FindIt Beranda" title="FindIt"><i class="fa-solid fa-magnifying-glass-location"></i></a>
+        <nav class="side-nav">
+            <a class="nav-item" data-label="Beranda" aria-label="Beranda" title="Beranda" href="PBL.html"><i class="fa-solid fa-house"></i></a>
+            <a class="nav-item" data-label="Buat laporan" aria-label="Buat laporan" title="Buat laporan" href="lapor.html"><i class="fa-solid fa-file-circle-plus"></i></a>
+            <a class="nav-item" data-label="Database laporan" aria-label="Database laporan" title="Database laporan" href="daftar-laporan.html"><i class="fa-solid fa-box-open"></i></a>
+            <a class="nav-item" data-label="Statistik" aria-label="Statistik" title="Statistik" href="rekap.html"><i class="fa-solid fa-chart-simple"></i></a>
+            <a class="nav-item" data-label="Tentang FindIt" aria-label="Tentang FindIt" title="Tentang FindIt" href="tentang.html"><i class="fa-solid fa-circle-info"></i></a>
+            <a class="nav-item active" data-label="Kontak admin" aria-label="Kontak admin" title="Kontak admin" href="kontak.html"><i class="fa-solid fa-headset"></i></a>
+        </nav>
+        <div class="side-spacer"></div>
+        <div class="sidebar-bottom">
+            <a class="nav-item" data-label="Keluar" aria-label="Keluar" title="Keluar" href="login.html" onclick="sessionStorage.removeItem('activeUser')"><i class="fa-solid fa-right-from-bracket"></i></a>
+        </div>
+    </aside>
+
+    <main class="app-main">
+        <header class="topbar">
+            <div>
+                <div class="eyebrow">FindIt Portal · Politeknik Negeri Batam</div>
+                <h1 class="page-title">Pusat Bantuan</h1>
+                <p class="page-subtitle">Kirim pesan terkait kendala penggunaan FindIt atau pertanyaan tentang laporan.</p>
+            </div>
+            <div class="top-actions">
+                <label class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="headerSearch" placeholder="Cari di halaman..." aria-label="Cari di halaman">
+                </label>
+                <a class="icon-button" href="kontak.html" title="Pusat bantuan" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
+                <a class="user-chip" href="login.html" onclick="sessionStorage.removeItem('activeUser')" title="Keluar dari akun">
+                    <span class="avatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="user-copy">
+                        <span class="user-name" id="sapaanMahasiswa">Mahasiswa</span>
+                        <span class="user-role">Akun kampus</span>
+                    </span>
+                </a>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <div class="page-top-row">
+                <div>
+                    <div class="eyebrow">Bantuan pengguna</div>
+                    <h2 class="page-title">Ada kendala? Hubungi admin.</h2>
+                    <p class="page-subtitle">Jelaskan kendala secara ringkas agar mudah ditindaklanjuti.</p>
+                </div>
+            </div>
+
+            <section class="contact-grid">
+                <article class="panel form-panel">
+                    <div class="form-intro">
+                        <span class="form-intro-icon"><i class="fa-solid fa-headset"></i></span>
+                        <div><h2>Kirim pesan</h2><p>Form ini menampilkan konfirmasi lokal.</p></div>
+                    </div>
+                    <form id="formKontak" class="form-grid">
+                        <div class="field">
+                            <label for="kontakNama">Nama / NIM <span class="required">*</span></label>
+                            <input id="kontakNama" name="nama" type="text" placeholder="Nama atau NIM mahasiswa" required maxlength="100">
+                        </div>
+                        <div class="field">
+                            <label for="kontakKategori">Kategori kendala <span class="required">*</span></label>
+                            <select id="kontakKategori" name="kategori" required>
+                                <option value="Laporan">Laporan barang</option>
+                                <option value="Akun">Akun dan akses</option>
+                                <option value="Data">Data atau status laporan</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="field full">
+                            <label for="kontakPesan">Pesan <span class="required">*</span></label>
+                            <textarea id="kontakPesan" name="pesan" required maxlength="1500" placeholder="Ceritakan kendala yang Anda alami..."></textarea>
+                        </div>
+                        <div class="field full">
+                            <div class="form-actions">
+                                <button type="reset" class="button button-secondary">Bersihkan</button>
+                                <button type="submit" class="button button-primary"><i class="fa-solid fa-paper-plane"></i> Kirim pesan</button>
+                            </div>
+                        </div>
+                    </form>
+                </article>
+
+                <aside class="panel quick-panel">
+                    <div class="panel-heading">
+                        <div><h3>Informasi bantuan</h3><p>Hal yang perlu diketahui sebelum menghubungi admin</p></div>
+                    </div>
+                    <div class="panel-soft contact-option">
+                        <span class="quick-icon"><i class="fa-solid fa-clipboard-check"></i></span>
+                        <div><strong>Periksa status laporan</strong><p>Laporan yang baru dibuat perlu menunggu validasi sebelum tampil di database publik.</p></div>
+                    </div>
+                    <div class="panel-soft contact-option">
+                        <span class="quick-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <div><strong>Gunakan pencarian</strong><p>Coba cari menggunakan nama barang atau lokasi untuk menemukan laporan yang sesuai.</p></div>
+                    </div>
+                    <div class="panel-soft contact-option">
+                        <span class="quick-icon"><i class="fa-solid fa-lock"></i></span>
+                        <div><strong>Jaga informasi pribadi</strong><p>Jangan kirim PIN, kata sandi, atau informasi sensitif melalui pesan.</p></div>
+                    </div>
+                </aside>
+            </section>
+        </div>
+        <footer class="footer-note">FindIt · Sistem Informasi Barang Hilang dan Temuan Kampus<br>Politeknik Negeri Batam · PBL</footer>
+    </main>
 </div>
+
+<script src="../js/PBL.js"></script>
+<script>
+    const cf = document.getElementById('formKontak');
+    if (cf) {
+        cf.addEventListener('submit', e => {
+            e.preventDefault();
+            const nama = document.getElementById('kontakNama').value.trim();
+            const pesan = document.getElementById('kontakPesan').value.trim();
+            if (!nama || !pesan) return;
+            alert('Pesan berhasil disiapkan di pratinjau FindIt. Untuk pengiriman nyata, form perlu dihubungkan ke backend.');
+            cf.reset();
+        });
+    }
+    const hs = document.getElementById('headerSearch');
+    if (hs) {
+        hs.addEventListener('input', e => {
+            if (e.target.value.trim()) window.location.href = 'daftar-laporan.html?q=' + encodeURIComponent(e.target.value.trim());
+        });
+    }
+</script>
 </body>
 </html>

@@ -8,101 +8,113 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: url('../images/bgpoltek.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            overflow-x: hidden;
-        }
-        .estareal-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(245,245,245,0.95) 0%, rgba(150,150,150,0.6) 40%, rgba(10,10,10,0.95) 100%); z-index: -2; }
-        .massive-text { position: fixed; top: 15%; left: 50%; transform: translateX(-50%); font-size: 22vw; font-weight: 800; color: #0a0a0a; z-index: -1; line-height: 0.75; letter-spacing: -0.05em; white-space: nowrap; user-select: none; }
-        
-        .perfect-blur { background: rgba(30, 30, 30, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-        
-        .nav-link { color: #000; font-weight: 500; font-size: 0.9rem; transition: 0.3s; }
-        .nav-link:hover { opacity: 0.6; }
-        .btn-outline-nav { border: 1px solid #000; color: #000; border-radius: 999px; padding: 6px 20px; font-weight: 500; font-size: 0.85rem; transition: 0.3s; display: flex; align-items: center; gap: 8px;}
-        .btn-outline-nav:hover { background: #000; color: #fff; }
-
-        .glass-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 10px 0; outline: none; transition: 0.3s; }
-        .glass-input:focus { border-color: white; }
+        body { font-family: 'Inter', sans-serif; background: url('../images/bgpoltek.jpeg') no-repeat center center fixed; background-size: cover; color: white; overflow-x: hidden; }
+        .main-overlay { position: fixed; inset: 0; background: linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(15,23,42,0.8) 100%); z-index: -2; }
+        .glass-ui { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .nav-link { color: #cbd5e1; font-weight: 500; font-size: 0.9rem; transition: 0.3s; padding: 6px 12px; border-radius: 6px;}
+        .nav-link:hover { color: white; background: rgba(255,255,255,0.1); }
+        .btn-modern { background: white; color: #0f172a; padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: 0.3s; display: inline-block; font-size: 0.9rem;}
+        .btn-modern:hover { background: #e2e8f0; transform: translateY(-2px); }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
-    
-    <div class="estareal-overlay"></div>
-    <img src="../images/bgpoltek.jpeg" alt="Background" class="fixed inset-0 w-full h-full object-cover z-[-3]">
-
-    <!-- NAVBAR ESTAREAL -->
-    <nav class="w-full px-10 py-6 flex justify-between items-center fixed top-0 z-50 transition-all duration-300 bg-white/10 backdrop-blur-md border-b border-white/20">
-        <div class="flex items-center gap-2 text-black cursor-default">
-            <img src="../images/Logo Pbl FindIt.jpg" alt="Logo" class="w-10 h-10 object-cover rounded-full">
-            <span class="font-bold text-xl tracking-tight hidden sm:block">FindIt</span>
+    <div class="main-overlay"></div>
+    <nav class="w-full px-8 py-5 flex justify-between items-center fixed top-0 z-50 glass-ui border-b-0 border-white/5 shadow-md">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center text-white"><i class="fa-solid fa-cube"></i></div>
+            <span class="font-bold text-lg tracking-tight">FindIt.</span>
         </div>
-        <div class="hidden lg:flex items-center gap-10">
-            <a href="#berita" class="nav-link text-black font-semibold">Papan Utama</a>
-            <a href="lapor.html" class="nav-link text-black font-semibold">Buat Laporan</a>
-            <a href="daftar-laporan.html" class="nav-link text-black font-semibold">Database Data</a>
-            <a href="rekap.html" class="nav-link text-black font-semibold">Statistik</a>
+        <div class="hidden lg:flex items-center gap-4 bg-white/5 px-4 py-1.5 rounded-full border border-white/10">
+            <a href="#berita" class="nav-link">Papan Utama</a>
+            <a href="lapor.html" class="nav-link">Buat Laporan Baru</a>
+            <a href="daftar-laporan.html" class="nav-link">Cari Database</a>
+            <a href="rekap.html" class="nav-link">Statistik</a>
+            <a href="tentang.html" class="nav-link">Tentang</a>
         </div>
         <div class="flex items-center gap-4">
-            <button onclick="sessionStorage.removeItem('activeUser'); window.location.href='login.html';" class="btn-outline-nav bg-white/50 backdrop-blur-sm">
-                <img src="../images/default-profile.jpg" alt="Profile" class="w-8 h-8 object-cover rounded-full">
-                <span id="sapaanMahasiswa" class="font-bold">User</span> <i class="fa-solid fa-right-from-bracket"></i>
+            <button onclick="sessionStorage.removeItem('activeUser'); window.location.href='login.html';" class="flex items-center gap-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-lg transition border border-red-500/20">
+                <span id="sapaanMahasiswa" class="font-medium text-sm hidden sm:block">User</span> <i class="fa-solid fa-power-off"></i>
             </button>
         </div>
     </nav>
 
-    <!-- CENTERPIECE HERO -->
-    <section class="min-h-screen flex items-center justify-center pt-20 px-6 relative z-10">
-        <div class="perfect-blur w-full max-w-5xl rounded-lg p-10 md:p-16 flex flex-col md:flex-row items-center gap-10">
+    <section class="min-h-screen flex items-center pt-20 px-8 relative z-10 max-w-7xl mx-auto w-full">
+        <div class="flex flex-col md:flex-row items-center gap-12 w-full">
             <div class="flex-1">
-                <h1 class="text-4xl md:text-5xl font-semibold leading-tight mb-4 text-white">Sistem Integritas Data<br>Politeknik Negeri Batam.</h1>
-                <p class="text-gray-300 font-light text-sm md:text-base mb-8 max-w-lg leading-relaxed">
-                    Platform pintar untuk pelaporan barang hilang dan temuan di area kampus. Kami merancang arsitektur keamanan data untuk memastikan transparansi dan kecepatan.
-                </p>
+                <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-xs font-semibold mb-6 inline-block">Sistem Layanan Terpadu Polibatam</span>
+                <h1 class="text-5xl md:text-6xl font-bold leading-tight mb-6 text-white tracking-tight">Cari, Temukan, <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">Dan Laporkan.</span></h1>
+                <p class="text-slate-300 font-light text-base mb-8 max-w-lg leading-relaxed">Membantu civitas akademika Politeknik Negeri Batam melaporkan barang hilang dan penemuan dengan verifikasi keamanan ketat tingkat admin.</p>
                 <div class="flex gap-4">
-                    <a href="lapor.html" class="bg-white text-black px-8 py-3 rounded-full font-semibold hover:opacity-80 transition text-sm">Lapor Sekarang</a>
-                    <a href="#berita" class="border border-white text-white px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition text-sm">Lihat Berita</a>
+                    <a href="lapor.html" class="btn-modern shadow-lg shadow-white/10">Lapor Sekarang <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                    <a href="daftar-laporan.html" class="bg-white/10 border border-white/20 text-white px-6 py-3 rounded-lg font-medium hover:bg-white/20 transition text-sm flex items-center"><i class="fa-solid fa-search mr-2"></i> Cari Barang</a>
                 </div>
             </div>
-            
-            <!-- Quick Stats in Hero -->
-            <div class="w-full md:w-1/3 grid grid-cols-1 gap-4">
-                <div class="bg-white/5 border border-white/10 p-5 rounded">
-                    <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Total Laporan</p>
-                    <h3 id="statTotal" class="text-3xl font-bold">0+</h3>
-                </div>
-                <div class="bg-white/5 border border-white/10 p-5 rounded">
-                    <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Kasus Selesai</p>
-                    <h3 id="statSelesai" class="text-3xl font-bold text-green-400">0+</h3>
+            <div class="flex-1 w-full flex justify-center md:justify-end">
+                <div class="glass-ui p-6 rounded-2xl w-full max-w-sm relative">
+                    <div class="absolute -top-4 -left-4 w-20 h-20 bg-blue-500/30 rounded-full blur-2xl"></div>
+                    <h3 class="font-semibold text-lg mb-4 flex justify-between items-center">Live Status <span class="flex h-3 w-3"><span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span></span></h3>
+                    <div class="space-y-4">
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5 flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-400">Laporan Masuk</p>
+                                <p id="statTotal" class="font-bold text-xl">0</p>
+                            </div>
+                            <i class="fa-solid fa-inbox text-blue-400 text-2xl"></i>
+                        </div>
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5 flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-400">Kasus Diselesaikan</p>
+                                <p id="statSelesai" class="font-bold text-xl text-green-400">0</p>
+                            </div>
+                            <i class="fa-solid fa-handshake-angle text-green-400 text-2xl"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- PAPAN BERITA -->
-    <section id="berita" class="w-full max-w-7xl mx-auto px-6 py-20 relative z-10">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-white/20 pb-6">
+    <section id="panduan" class="py-16 bg-slate-900/50 border-y border-white/5 relative z-10">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl font-bold mb-2">Panduan Keamanan (PBL)</h2>
+                <p class="text-sm text-gray-400">Alur verifikasi pelaporan di aplikasi FindIt.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="glass-ui p-6 rounded-xl hover:-translate-y-1 transition duration-300">
+                    <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fa-solid fa-pen-to-square"></i></div>
+                    <h4 class="font-semibold mb-2">1. Input Laporan</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed">Mahasiswa memasukkan detail laporan ke sistem. Laporan ini tidak akan langsung tayang melainkan masuk antrean verifikasi.</p>
+                </div>
+                <div class="glass-ui p-6 rounded-xl hover:-translate-y-1 transition duration-300">
+                    <div class="w-12 h-12 bg-yellow-500/20 text-yellow-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fa-solid fa-user-shield"></i></div>
+                    <h4 class="font-semibold mb-2">2. Validasi Admin</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed">Sistem Admin mengecek ulang laporan untuk mencegah manipulasi data/hoax. Jika valid, admin akan meneruskan data ke publik.</p>
+                </div>
+                <div class="glass-ui p-6 rounded-xl hover:-translate-y-1 transition duration-300">
+                    <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl"><i class="fa-solid fa-check-double"></i></div>
+                    <h4 class="font-semibold mb-2">3. Publikasi Terverifikasi</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed">Laporan tayang di Papan Utama dan Database Pencarian mahasiswa dengan status valid, memastikan informasi akurat.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="berita" class="max-w-7xl mx-auto px-8 py-20 relative z-10 w-full">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-10 border-b border-white/10 pb-4">
             <div>
-                <h2 class="text-3xl font-semibold mb-2">Papan Informasi</h2>
-                <p class="text-sm text-gray-400 font-light">Pembaruan laporan tervalidasi dan sistem admin.</p>
+                <h2 class="text-3xl font-bold mb-1">Papan Utama</h2>
+                <p class="text-sm text-gray-400 font-light">Informasi admin & laporan valid mahasiswa.</p>
             </div>
-            <div class="w-full md:w-1/3 relative mt-6 md:mt-0">
-                <input type="text" id="globalSearch" placeholder="Cari laporan spesifik..." class="glass-input">
-                <i class="fa-solid fa-search absolute right-0 top-3 text-gray-400"></i>
+            <div class="w-full md:w-1/3 relative mt-4 md:mt-0">
+                <input type="text" id="globalSearch" placeholder="Cari laporan..." class="w-full bg-white/5 border border-white/10 text-white padding-2 px-4 py-2 rounded-lg outline-none focus:border-blue-500 transition text-sm">
             </div>
         </div>
-        
-        <div id="feedBeritaTerkini" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Render Data by PBL.js -->
-        </div>
+        <div id="feedBeritaTerkini" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
     </section>
 
-    <footer class="text-center py-10 relative z-10 border-t border-white/10 mt-auto bg-black/50 backdrop-blur-md">
-        <p class="text-xs text-gray-400 font-light">&copy; 2026 FindIt Polibatam | Architecture by Yusuf & Fitra</p>
+    <footer class="text-center py-8 relative z-10 border-t border-white/10 mt-auto bg-slate-900">
+        <p class="text-xs text-gray-500">&copy; 2026 FindIt Polibatam | Project Based Learning</p>
     </footer>
 
     <script src="../js/PBL.js"></script>

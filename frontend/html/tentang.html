@@ -3,33 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About - FindIt</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap');
-        body { font-family: 'Space Grotesk', sans-serif; background: url('bgpoltek2.jpeg') no-repeat center center fixed; background-size: cover; color: #fff; }
-        .glass-overlay { background: rgba(10, 12, 20, 0.88); backdrop-filter: blur(10px); min-height: 100vh; display: flex; align-items: center; justify-content: center;}
-    </style>
+    <meta name="theme-color" content="#171719">
+    <title>Tentang FindIt | FindIt Polibatam</title>
+    <link rel="stylesheet" href="../css/PBL.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-<div class="glass-overlay">
-    <div class="max-w-3xl text-center px-6">
-        <h1 class="text-5xl tracking-[0.2em] font-light uppercase mb-6">About <span class="font-bold text-blue-500">System</span></h1>
-        <p class="text-sm text-gray-400 leading-loose tracking-wider mb-8">
-            Diciptakan sebagai solusi dari era digital, FindIt mengintegrasikan laporan kehilangan dengan protokol keamanan modern kampus Politeknik Negeri Batam. Mengurangi delay, meningkatkan transparansi.
-        </p>
-        <div class="border-t border-white/20 pt-8 flex justify-center gap-12">
-            <div>
-                <p class="text-xs text-blue-500 tracking-widest uppercase">Version</p>
-                <p class="font-bold text-xl mt-1">2.0.26</p>
-            </div>
-            <div>
-                <p class="text-xs text-blue-500 tracking-widest uppercase">Protocol</p>
-                <p class="font-bold text-xl mt-1">Secure</p>
-            </div>
+<div class="app-shell">
+    <aside class="sidebar" aria-label="Navigasi utama">
+        <a class="brand-mark" href="PBL.html" aria-label="FindIt Beranda" title="FindIt"><i class="fa-solid fa-magnifying-glass-location"></i></a>
+        <nav class="side-nav">
+            <a class="nav-item" data-label="Beranda" aria-label="Beranda" title="Beranda" href="PBL.html"><i class="fa-solid fa-house"></i></a>
+            <a class="nav-item" data-label="Buat laporan" aria-label="Buat laporan" title="Buat laporan" href="lapor.html"><i class="fa-solid fa-file-circle-plus"></i></a>
+            <a class="nav-item" data-label="Database laporan" aria-label="Database laporan" title="Database laporan" href="daftar-laporan.html"><i class="fa-solid fa-box-open"></i></a>
+            <a class="nav-item" data-label="Statistik" aria-label="Statistik" title="Statistik" href="rekap.html"><i class="fa-solid fa-chart-simple"></i></a>
+            <a class="nav-item active" data-label="Tentang FindIt" aria-label="Tentang FindIt" title="Tentang FindIt" href="tentang.html"><i class="fa-solid fa-circle-info"></i></a>
+            <a class="nav-item" data-label="Kontak admin" aria-label="Kontak admin" title="Kontak admin" href="kontak.html"><i class="fa-solid fa-headset"></i></a>
+        </nav>
+        <div class="side-spacer"></div>
+        <div class="sidebar-bottom">
+            <a class="nav-item" data-label="Keluar" aria-label="Keluar" title="Keluar" href="login.html" onclick="sessionStorage.removeItem('activeUser')"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
-        <button onclick="window.location.href='PBL.html'" class="mt-12 text-[10px] tracking-widest uppercase hover:text-blue-400">Return to Core System</button>
-    </div>
+    </aside>
+
+    <main class="app-main">
+        <header class="topbar">
+            <div>
+                <div class="eyebrow">FindIt Portal · Politeknik Negeri Batam</div>
+                <h1 class="page-title">Tentang FindIt</h1>
+                <p class="page-subtitle">Kenali tujuan, ruang lingkup, dan alur kerja portal PBL FindIt.</p>
+            </div>
+            <div class="top-actions">
+                <label class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="headerSearch" placeholder="Cari di halaman..." aria-label="Cari di halaman">
+                </label>
+                <a class="icon-button" href="kontak.html" title="Pusat bantuan" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
+                <a class="user-chip" href="login.html" onclick="sessionStorage.removeItem('activeUser')" title="Keluar dari akun">
+                    <span class="avatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="user-copy">
+                        <span class="user-name" id="sapaanMahasiswa">Mahasiswa</span>
+                        <span class="user-role">Akun kampus</span>
+                    </span>
+                </a>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <section class="about-grid">
+                <article class="panel about-hero">
+                    <div class="hero-kicker"><span></span> PBL · Politeknik Negeri Batam</div>
+                    <h2>Satu portal untuk<br>barang hilang & temuan.</h2>
+                    <p>FindIt dirancang untuk membantu civitas kampus mencatat, menelusuri, dan memantau laporan barang yang hilang maupun ditemukan melalui alur informasi yang lebih terstruktur.</p>
+                    <a href="lapor.html" class="button button-primary" style="margin-top:10px"><i class="fa-solid fa-plus"></i> Mulai buat laporan</a>
+                </article>
+
+                <article class="panel about-feature-list">
+                    <div class="panel-heading">
+                        <div>
+                            <h3 style="margin:0;font-family:'Space Grotesk'">Fokus sistem</h3>
+                            <p>Prinsip utama pada PBL ini</p>
+                        </div>
+                        <span class="stat-icon"><i class="fa-solid fa-compass"></i></span>
+                    </div>
+                    <div class="feature-row">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <div><strong>Informasi terpusat</strong><p>Data laporan ditempatkan dalam satu tampilan agar lebih mudah ditelusuri.</p></div>
+                    </div>
+                    <div class="feature-row">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <div><strong>Validasi sebelum publikasi</strong><p>Laporan baru berstatus menunggu dan tidak langsung muncul di database publik.</p></div>
+                    </div>
+                    <div class="feature-row">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <div><strong>Transparansi status</strong><p>Ringkasan statistik menunjukkan klasifikasi dan status laporan yang tersimpan.</p></div>
+                    </div>
+                </article>
+            </section>
+
+            <div class="section-head">
+                <div>
+                    <h2 class="section-title">Cara kerja FindIt</h2>
+                    <p class="section-note">Alur ringkas dari pelaporan sampai penyelesaian kasus.</p>
+                </div>
+            </div>
+
+            <section class="panel analytics-panel">
+                <div class="process-list" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:24px">
+                    <div class="process-item">
+                        <span class="process-num">01</span>
+                        <div><h4>Buat laporan</h4><p>Mahasiswa mengisi tipe laporan, kategori barang, lokasi, tanggal, ciri, dan foto jika tersedia.</p></div>
+                    </div>
+                    <div class="process-item">
+                        <span class="process-num">02</span>
+                        <div><h4>Validasi petugas</h4><p>Petugas memeriksa kelengkapan dan keabsahan informasi sebelum laporan dipublikasikan.</p></div>
+                    </div>
+                    <div class="process-item">
+                        <span class="process-num">03</span>
+                        <div><h4>Telusuri & selesaikan</h4><p>Pengguna melihat laporan valid, lalu status kasus dapat diperbarui sampai selesai.</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <footer class="footer-note">FindIt · Sistem Informasi Barang Hilang dan Temuan Kampus<br>Politeknik Negeri Batam · PBL</footer>
+    </main>
 </div>
+
+<script src="../js/PBL.js"></script>
+<script>
+    const hs = document.getElementById('headerSearch');
+    if (hs) {
+        hs.addEventListener('input', e => {
+            if (e.target.value.trim()) window.location.href = 'daftar-laporan.html?q=' + encodeURIComponent(e.target.value.trim());
+        });
+    }
+</script>
 </body>
 </html>

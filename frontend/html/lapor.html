@@ -3,93 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buat Laporan - FindIt</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: url('images/bgpoltek.jpeg') no-repeat center center fixed; background-size: cover; color: white; }
-        .estareal-overlay { position: fixed; inset: 0; background: linear-gradient(180deg, rgba(20,20,20,0.85) 0%, rgba(10,10,10,0.95) 100%); z-index: -2; }
-        
-        .perfect-blur { background: rgba(30, 30, 30, 0.4); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 40px 80px rgba(0,0,0,0.6); border-radius: 2px;}
-        
-        .glass-input { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 0; outline: none; transition: 0.3s; font-size: 0.95rem; }
-        .glass-input:focus { border-bottom: 1px solid white; }
-        .glass-input option { background: #1a1a1a; color: white; }
-        
-        .file-upload-wrapper { position: relative; width: 100%; border: 1px dashed rgba(255,255,255,0.3); padding: 25px 20px; text-align: center; cursor: pointer; transition: 0.3s; background: rgba(0,0,0,0.2);}
-        .file-upload-wrapper:hover { border-color: white; background: rgba(255,255,255,0.05); }
-        .file-upload-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-        
-        .btn-submit { background: #fff; color: #000; width: 100%; padding: 14px; border-radius: 999px; font-weight: 600; margin-top: 20px; transition: 0.3s; display: flex; justify-content: center; gap: 8px;}
-        .btn-submit:hover { opacity: 0.8; }
-        .btn-submit:disabled { background: #555; color: #aaa; cursor: not-allowed; }
-    </style>
+    <meta name="theme-color" content="#171719">
+    <title>Buat Laporan | FindIt Polibatam</title>
+    <link rel="stylesheet" href="../css/PBL.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
-<body class="flex items-center justify-center min-h-screen py-10 px-4">
-    <div class="estareal-overlay"></div>
-
-    <div class="perfect-blur w-full max-w-3xl p-10 md:p-14 relative">
-        <a href="PBL.html" class="absolute top-6 right-8 text-gray-400 hover:text-white text-xl transition"><i class="fa-solid fa-xmark"></i></a>
-        
-        <div class="mb-10 border-b border-white/20 pb-6">
-            <h2 class="text-3xl font-semibold mb-2">Form Registrasi Laporan.</h2>
-            <p class="text-sm text-gray-400 font-light">Mohon isi data dengan akurat. Gambar akan otomatis dioptimasi oleh sistem.</p>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" aria-label="Navigasi utama">
+        <a class="brand-mark" href="PBL.html" aria-label="FindIt Beranda" title="FindIt"><i class="fa-solid fa-magnifying-glass-location"></i></a>
+        <nav class="side-nav">
+            <a class="nav-item" data-label="Beranda" aria-label="Beranda" title="Beranda" href="PBL.html"><i class="fa-solid fa-house"></i></a>
+            <a class="nav-item active" data-label="Buat laporan" aria-label="Buat laporan" title="Buat laporan" href="lapor.html"><i class="fa-solid fa-file-circle-plus"></i></a>
+            <a class="nav-item" data-label="Database laporan" aria-label="Database laporan" title="Database laporan" href="daftar-laporan.html"><i class="fa-solid fa-box-open"></i></a>
+            <a class="nav-item" data-label="Statistik" aria-label="Statistik" title="Statistik" href="rekap.html"><i class="fa-solid fa-chart-simple"></i></a>
+            <a class="nav-item" data-label="Tentang FindIt" aria-label="Tentang FindIt" title="Tentang FindIt" href="tentang.html"><i class="fa-solid fa-circle-info"></i></a>
+            <a class="nav-item" data-label="Kontak admin" aria-label="Kontak admin" title="Kontak admin" href="kontak.html"><i class="fa-solid fa-headset"></i></a>
+        </nav>
+        <div class="side-spacer"></div>
+        <div class="sidebar-bottom">
+            <a class="nav-item" data-label="Keluar" aria-label="Keluar" title="Keluar" href="login.html" onclick="sessionStorage.removeItem('activeUser')"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
+    </aside>
 
-        <form id="formLaporMahasiswa" class="flex flex-col gap-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">Tipe Entitas</label>
-                    <select id="lap_tipe" name="tipe" required class="glass-input">
-                        <option value="Kehilangan">Saya Kehilangan Barang</option>
-                        <option value="Ditemukan">Saya Menemukan Barang</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">Kategori</label>
-                    <select id="lap_kategori" name="kategori" required class="glass-input">
-                        <option value="Dokumen">Dokumen (KTM, KTP, Dompet)</option>
-                        <option value="Elektronik">Elektronik (Laptop, HP)</option>
-                        <option value="Aksesoris">Aksesoris / Lainnya</option>
-                    </select>
-                </div>
-            </div>
-
+    <main class="app-main">
+        <header class="topbar">
             <div>
-                <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">Identitas Barang</label>
-                <input type="text" id="lap_nama" name="nama_barang" placeholder="Nama / Merk Barang..." required class="glass-input">
+                <div class="eyebrow">FindIt Portal · Politeknik Negeri Batam</div>
+                <h1 class="page-title">Buat Laporan</h1>
+                <p class="page-subtitle">Isi informasi barang dengan jelas agar proses penelusuran lebih mudah.</p>
             </div>
+            <div class="top-actions">
+                <label class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="search" id="headerSearch" placeholder="Cari di halaman..." aria-label="Cari di halaman">
+                </label>
+                <a class="icon-button" href="kontak.html" title="Pusat bantuan" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
+                <a class="user-chip" href="login.html" onclick="sessionStorage.removeItem('activeUser')" title="Keluar dari akun">
+                    <span class="avatar"><i class="fa-solid fa-user"></i></span>
+                    <span class="user-copy">
+                        <span class="user-name" id="sapaanMahasiswa">Mahasiswa</span>
+                        <span class="user-role">Akun kampus</span>
+                    </span>
+                </a>
+            </div>
+        </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="page-content">
+            <div class="page-top-row">
                 <div>
-                    <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">Lokasi</label>
-                    <input type="text" id="lap_lokasi" name="lokasi" placeholder="Lokasi Terakhir / Ditemukan..." required class="glass-input">
+                    <div class="eyebrow">Formulir mahasiswa</div>
+                    <h2 class="page-title">Catat barang hilang atau temuan</h2>
+                    <p class="page-subtitle">Berikan informasi yang akurat. Laporan baru akan masuk ke antrean validasi.</p>
                 </div>
+                <a href="PBL.html" class="button button-secondary"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
+            </div>
+
+            <div class="info-strip">
+                <i class="fa-solid fa-shield-halved"></i>
                 <div>
-                    <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">Tanggal</label>
-                    <input type="date" id="lap_tanggal" name="tanggal" required class="glass-input text-gray-300">
+                    <strong>Data laporan diperiksa sebelum ditampilkan</strong>
+                    <p>Jangan cantumkan kata sandi, PIN, atau informasi pribadi sensitif dalam deskripsi. Pastikan lokasi dan ciri barang cukup jelas.</p>
                 </div>
             </div>
 
-            <div>
-                <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-1 block">Deskripsi Visual</label>
-                <textarea id="lap_ciri" name="ciri" rows="3" placeholder="Goresan, ciri khas fisik, warna..." required class="glass-input resize-none"></textarea>
-            </div>
-
-            <div>
-                <label class="text-[10px] uppercase tracking-widest text-gray-500 mb-2 block">Unggah Bukti Foto (Disarankan)</label>
-                <div class="file-upload-wrapper">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 mb-3 block"></i>
-                    <p id="fileName" class="text-sm text-gray-300">Sentuh atau seret gambar ke area ini (JPG/PNG)</p>
-                    <input type="file" id="lap_foto" accept="image/jpeg, image/png" onchange="document.getElementById('fileName').innerText = this.files[0] ? this.files[0].name : 'Pilih File'">
+            <section class="panel form-panel">
+                <div class="form-intro">
+                    <span class="form-intro-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+                    <div>
+                        <h2>Detail laporan barang</h2>
+                        <p>Kolom bertanda <span style="color:var(--orange)">*</span> wajib diisi.</p>
+                    </div>
                 </div>
-            </div>
 
-            <button type="submit" id="btnSubmitLaporan" class="btn-submit">Eksekusi Laporan <i class="fa-solid fa-arrow-right"></i></button>
-        </form>
-    </div>
+                <form id="formLaporMahasiswa" class="form-grid">
+                    <div class="field">
+                        <label for="lap_tipe">Jenis laporan <span class="required">*</span></label>
+                        <select id="lap_tipe" name="tipe" required>
+                            <option value="Kehilangan">Saya kehilangan barang</option>
+                            <option value="Ditemukan">Saya menemukan barang</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="lap_kategori">Kategori barang <span class="required">*</span></label>
+                        <select id="lap_kategori" name="kategori" required>
+                            <option value="Dokumen">Dokumen / kartu identitas</option>
+                            <option value="Elektronik">Elektronik</option>
+                            <option value="Aksesoris">Aksesori / barang lainnya</option>
+                        </select>
+                    </div>
+                    <div class="field full">
+                        <label for="lap_nama">Nama atau identitas barang <span class="required">*</span></label>
+                        <input type="text" id="lap_nama" name="nama_barang" placeholder="Contoh: tumbler hitam, KTM, earbud putih" maxlength="100" required>
+                    </div>
+                    <div class="field">
+                        <label for="lap_lokasi">Lokasi terakhir / ditemukan <span class="required">*</span></label>
+                        <input type="text" id="lap_lokasi" name="lokasi" placeholder="Contoh: Perpustakaan lantai 2" maxlength="150" required>
+                    </div>
+                    <div class="field">
+                        <label for="lap_tanggal">Tanggal kejadian <span class="required">*</span></label>
+                        <input type="date" id="lap_tanggal" name="tanggal" required>
+                    </div>
+                    <div class="field full">
+                        <label for="lap_ciri">Deskripsi dan ciri fisik <span class="required">*</span></label>
+                        <textarea id="lap_ciri" name="ciri" rows="4" maxlength="1200" placeholder="Tuliskan warna, merek, goresan, gantungan, atau ciri pembeda lainnya..." required></textarea>
+                        <div class="field-hint">Deskripsi rinci membantu proses pencocokan dan verifikasi oleh petugas.</div>
+                    </div>
+                    <div class="field full">
+                        <label for="lap_foto">Foto barang (opsional)</label>
+                        <div class="file-upload-wrapper">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p id="fileName">Pilih foto atau seret file ke area ini</p>
+                            <small>JPG atau PNG · disarankan foto yang jelas</small>
+                            <input type="file" id="lap_foto" accept="image/jpeg,image/png" aria-label="Unggah foto barang">
+                        </div>
+                    </div>
+                    <div class="field full">
+                        <div class="form-actions">
+                            <a class="button button-secondary" href="PBL.html">Batal</a>
+                            <button type="submit" id="btnSubmitLaporan" class="button button-primary"><i class="fa-solid fa-paper-plane"></i> Kirim laporan</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </div>
+        <footer class="footer-note">FindIt · Sistem Informasi Barang Hilang dan Temuan Kampus<br>Politeknik Negeri Batam · PBL</footer>
+    </main>
+</div>
 
-    <script src="../js/PBL.js"></script>
+<script src="../js/PBL.js"></script>
+<script>
+    const user = JSON.parse(sessionStorage.getItem('activeUser') || 'null');
+    if (!user || user.role !== 'mahasiswa') window.location.replace('login.html');
+    const dateField = document.getElementById('lap_tanggal');
+    if (dateField && !dateField.value) {
+        const d = new Date();
+        dateField.value = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
+    }
+    const fileField = document.getElementById('lap_foto');
+    if (fileField) {
+        fileField.addEventListener('change', () => {
+            const fn = document.getElementById('fileName');
+            if (fn) fn.textContent = fileField.files?.[0]?.name || 'Pilih foto atau seret file ke area ini';
+        });
+    }
+    const hs = document.getElementById('headerSearch');
+    if (hs) {
+        hs.addEventListener('input', e => {
+            if (e.target.value.trim()) window.location.href = 'daftar-laporan.html?q=' + encodeURIComponent(e.target.value.trim());
+        });
+    }
+</script>
 </body>
 </html>
