@@ -6,52 +6,71 @@
     <title>Database Laporan - FindIt</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: url('../images/bgpoltek.jpeg') no-repeat center center fixed; background-size: cover; color: white; }
-        .bg-overlay { position: fixed; inset: 0; background: linear-gradient(to bottom, rgba(15,23,42,0.9), rgba(2,6,23,0.95)); z-index: -2; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px;}
-        .glass-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255, 255, 255, 0.2); color: white; padding: 12px 16px; outline: none; transition: 0.3s; border-radius: 8px;}
-        .glass-input:focus { border-color: #3b82f6; }
-        .glass-input option { background: #1e293b; color: white; }
-    </style>
+    <link rel="stylesheet" href="../css/PBL.css">
 </head>
-<body class="flex flex-col min-h-screen">
-    <div class="bg-overlay"></div>
-
-    <nav class="sticky top-0 z-50 glass-card mx-6 mt-4 mb-8 border-none bg-white/10 shadow-lg">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="../html/PBL.html" class="font-semibold text-sm hover:text-gray-300 transition"><i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Beranda</a>
-            <span class="text-sm font-bold tracking-widest uppercase">Database Tersinkronisasi</span>
+<body>
+<div class="app-shell">
+    <aside class="sidebar" aria-label="Navigasi utama">
+        <a class="brand-mark" href="PBL.html" aria-label="FindIt Beranda" title="FindIt"><i class="fa-solid fa-magnifying-glass-location"></i></a>
+        <nav class="side-nav">
+            <a class="nav-item" data-label="Beranda" aria-label="Beranda" title="Beranda" href="PBL.html"><i class="fa-solid fa-house"></i></a>
+            <a class="nav-item" data-label="Buat laporan" aria-label="Buat laporan" title="Buat laporan" href="lapor.html"><i class="fa-solid fa-file-circle-plus"></i></a>
+            <a class="nav-item active" data-label="Database laporan" aria-label="Database laporan" title="Database laporan" href="daftar-laporan.html"><i class="fa-solid fa-box-open"></i></a>
+            <a class="nav-item" data-label="Statistik" aria-label="Statistik" title="Statistik" href="rekap.html"><i class="fa-solid fa-chart-simple"></i></a>
+            <a class="nav-item" data-label="Tentang FindIt" aria-label="Tentang FindIt" title="Tentang FindIt" href="tentang.html"><i class="fa-solid fa-circle-info"></i></a>
+            <a class="nav-item" data-label="Kontak admin" aria-label="Kontak admin" title="Kontak admin" href="kontak.html"><i class="fa-solid fa-headset"></i></a>
+        </nav>
+        <div class="side-spacer"></div>
+        <div class="sidebar-bottom">
+            <a class="nav-item" data-label="Keluar" aria-label="Keluar" title="Keluar" href="login.html" onclick="sessionStorage.removeItem('activeUser')"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
-    </nav>
+    </aside>
 
-    <section class="container mx-auto px-6 flex-grow">
-        <div class="glass-card p-4 mb-8 bg-blue-900/30 border-blue-500/30 flex items-start gap-4">
-            <i class="fa-solid fa-circle-info text-blue-400 mt-1"></i>
+    <main class="app-main">
+        <header class="topbar">
             <div>
-                <h4 class="font-semibold text-sm text-blue-100">Protokol Keamanan Data Berjalan</h4>
-                <p class="text-xs text-blue-200 mt-1 font-light leading-relaxed">Untuk mencegah manipulasi data atau laporan palsu, fitur penambahan data tidak tersedia di halaman ini. Setiap laporan baru wajib diinput melalui menu "Buat Laporan" dan akan masuk ke <strong>sesi antrean validasi Admin</strong> untuk pengecekan ulang sebelum data tayang di publik.</p>
+                <div class="eyebrow">FindIt Portal · Politeknik Negeri Batam</div>
+                <h1 class="page-title">Database Laporan</h1>
             </div>
-        </div>
+        </header>
 
-        <div class="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between glass-card p-6">
-            <div class="w-full md:w-1/2 relative">
-                <input type="text" id="inputSearch" placeholder="Cari merk barang, lokasi, atau pelapor..." class="glass-input pr-10">
-                <i class="fa-solid fa-search absolute right-4 top-3.5 text-gray-400"></i>
+        <div class="page-content">
+            <div class="page-top-row">
+                <div>
+                    <div class="eyebrow">Laporan terverifikasi</div>
+                    <h2 class="page-title">Cari barang hilang dan temuan</h2>
+                    <p class="page-subtitle">Hanya laporan yang sudah divalidasi petugas yang tampil di sini.</p>
+                </div>
+                <a href="lapor.html" class="button button-primary"><i class="fa-solid fa-plus"></i> Buat laporan</a>
             </div>
-            <div class="w-full md:w-1/3">
-                <select id="filterTipe" class="glass-input">
+
+            <div class="info-strip">
+                <i class="fa-solid fa-shield-halved"></i>
+                <div>
+                    <strong>Protokol keamanan data berjalan</strong>
+                    <p>Untuk mencegah laporan palsu, penambahan data langsung tidak tersedia di halaman ini. Setiap laporan baru wajib melalui formulir dan validasi petugas.</p>
+                </div>
+            </div>
+
+            <section class="panel" style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+                <input type="text" id="inputSearch" placeholder="Cari merk barang, lokasi, atau pelapor..." aria-label="Cari laporan">
+                <select id="filterTipe" aria-label="Filter kategori kasus">
                     <option value="Semua">Semua Kategori Kasus</option>
                     <option value="Kehilangan">Kasus Kehilangan Saja</option>
                     <option value="Ditemukan">Kasus Penemuan Saja</option>
                 </select>
-            </div>
+            </section>
+
+            <div id="reportContainer" class="card-grid"></div>
         </div>
+        <footer class="footer-note">FindIt · Sistem Informasi Barang Hilang dan Temuan Kampus<br>Politeknik Negeri Batam · PBL</footer>
+    </main>
+</div>
 
-        <div id="reportContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"></div>
-    </section>
-
-    <script src="../js/PBL.js"></script>
+<script src="../js/PBL.js"></script>
+<script>
+    const q = new URLSearchParams(location.search).get('q');
+    if (q) document.getElementById('inputSearch').value = q;
+</script>
 </body>
 </html>
