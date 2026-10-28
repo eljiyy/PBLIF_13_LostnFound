@@ -175,7 +175,7 @@ input:focus, select:focus, textarea:focus { background: var(--paper); border-col
 .report-card__title { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
 .report-card__meta { font-size: .78rem; color: var(--muted); margin-top: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .report-card__meta i { color: var(--brand); }
-.report-card__desc { font-size: .9rem; margin-top: 12px; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.report-card__desc { font-size: .9rem; margin-top: 12px; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .report-card .button { margin-top: 20px; padding: 14px 24px; font-size: .88rem; }
 .badge { position: absolute; top: 14px; left: 14px; z-index: 2; padding: 6px 14px; border-radius: var(--r-pill); font: 700 .68rem var(--font-display); letter-spacing: .08em; text-transform: uppercase; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); }
 .badge--lost { color: var(--warn); }
