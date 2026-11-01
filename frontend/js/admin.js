@@ -3,13 +3,19 @@ const admin = getActiveUser();
 if (!admin || admin.role !== 'admin') location.replace('login.html');
 
 const statusSelect = l => `<select class="status-select" onchange="ubahStatusUI(${l.id_laporan}, this.value)" aria-label="Status ${esc(l.nama_barang)}">${STATUSES.map(s => `<option ${s === l.status ? 'selected' : ''}>${s}</option>`).join('')}</select>`;
+const verifSelect = l => `<select class="status-select" onchange="ubahVerifUI(${l.id_laporan}, this.value)" aria-label="Verifikasi ${esc(l.nama_barang)}">${VERIF.map(v => `<option ${v === l.verifikasi ? 'selected' : ''}>${v}</option>`).join('')}</select>`;
+function ubahVerifUI(id, v) {
+    let catatan = '';
+    if (v === 'Tidak Valid') { catatan = prompt('Alasan laporan tidak valid (wajib, akan dilihat pelapor):') || ''; }
+    const r = Laporan.setVerifikasi(id, v, catatan); showToast(r.msg, r.ok ? 'ok' : 'err'); renderAll();
+}
 function ubahStatusUI(id, s) { const r = Laporan.setStatus(id, s); showToast(r.msg, r.ok ? 'ok' : 'err'); renderAll(); }
 function laporanRows(list) {
     if (!list.length) return '<p class="muted-note">Data tidak ditemukan.</p>';
-    return `<table class="data-table"><thead><tr><th>Barang</th><th>Tipe</th><th>Kategori</th><th>Lokasi &amp; tanggal</th><th>Pelapor</th><th>Status</th><th class="num">Aksi</th></tr></thead><tbody>` +
+    return `<table class="data-table"><thead><tr><th>Barang</th><th>Tipe</th><th>Kategori</th><th>Lokasi &amp; tanggal</th><th>Pelapor</th><th>Verifikasi</th><th>Status</th><th class="num">Aksi</th></tr></thead><tbody>` +
         list.map(l => `<tr><td><a href="detail-laporan.html?id=${l.id_laporan}"><strong>${esc(l.nama_barang)}</strong></a></td><td>${esc(l.tipe)}</td><td>${esc(l.kategori)}</td>
         <td>${esc(l.lokasi)}<br><small>${esc(fmtTanggal(l.tanggal))}</small></td><td>${esc(l.pelapor.nama)}<br><small>${esc(l.kontak)}</small></td>
-        <td>${statusSelect(l)}</td><td class="num"><a class="chip-btn" href="lapor.html?edit=${l.id_laporan}" title="Ubah"><i class="fa-solid fa-pen"></i></a>
+        <td>${verifSelect(l)}</td><td>${statusSelect(l)}</td><td class="num"><a class="chip-btn" href="lapor.html?edit=${l.id_laporan}" title="Ubah"><i class="fa-solid fa-pen"></i></a>
         <button class="chip-btn chip-btn--danger" onclick="hapusLaporanUI(${l.id_laporan}, renderAll)" title="Hapus"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('') + '</tbody></table>';
 }
 function renderDashboard() {

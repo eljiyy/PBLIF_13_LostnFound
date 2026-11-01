@@ -3,10 +3,11 @@
    Penyimpanan: localStorage browser (situs statis tanpa server basis data). */
 const T = { kat: 'fi_kategori_barang', pel: 'fi_pelapor', lap: 'fi_laporan_barang', seq: 'fi_seq', seed: 'fi_seed_v2', news: 'adminBeritaPBL' };
 const PLACEHOLDER_IMAGE = '../images/Logo Pbl FindIt.jpg';
-const ADMIN_WA = '6281234567890';
+const ADMIN_WA = '6281572877012';
 const STATUSES = ['Aktif', 'Cocok', 'Dikembalikan', 'Ditutup'];
 const TIPES = ['Hilang', 'Ditemukan'];
 const SELESAI = ['Dikembalikan', 'Ditutup'];
+const VERIF = ['Menunggu', 'Valid', 'Tidak Valid']; // verifikasi petugas, terpisah dari status kasus
 
 /* ---------- util ---------- */
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -98,12 +99,17 @@ const Pelapor = {
         if (used) return fail(`Pelapor masih memiliki ${used} laporan, penghapusan ditolak.`);
         save('pel', rows('pel').filter(p => p.id_pelapor !== id)); return done('Pelapor dihapus.');
     },
-    /* Pastikan pengguna yang login punya baris di tabel pelapor */
+    /* Pastikan pengguna yang login punya baris di tabel pelapor.
+       Akun sudah terdaftar di login, jadi tidak divalidasi ulang kontaknya di sini. */
     ensure(user) {
-        if (!user || user.role !== 'mahasiswa' || !user.nim) return null;
+        if (!user || !user.nim) return null;
         let p = this.byNim(user.nim);
-        if (!p) { const r = this.add({ nama: user.nama, nim: user.nim, kontak: user.nohp || '0800000000' }); p = r.data; }
-        return p || null;
+        if (!p) {
+            const list = rows('pel');
+            p = { id_pelapor: nextId('pel', 'id_pelapor'), nama: (user.nama || 'Mahasiswa').trim(), nim: String(user.nim).trim(), kontak: (user.nohp || '-').toString().trim() || '-' };
+            list.push(p); if (!save('pel', list)) return null;
+        }
+        return p;
     }
 };
 
@@ -117,7 +123,7 @@ const Laporan = {
     all() {
         const kat = Object.fromEntries(rows('kat').map(k => [k.id_kategori, k]));
         const pel = Object.fromEntries(rows('pel').map(p => [p.id_pelapor, p]));
-        return rows('lap').map(l => ({ ...l, kategori: kat[l.id_kategori]?.nama_kategori || '-', pelapor: pel[l.id_pelapor] || { nama: '-', nim: '-', kontak: '-' } }))
+        return rows('lap').map(l => ({ ...l, kategori: kat[l.id_kategori]?.nama_kategori || '-', pelapor: pel[l.id_pelapor] || { nama: '-', nim: '-', kontak: '-' }, verifikasi: l.verifikasi || 'Menunggu', catatan: l.catatan || '' }))
             .sort((a, b) => b.tanggal.localeCompare(a.tanggal) || b.id_laporan - a.id_laporan);
     },
     get: id => Laporan.all().find(l => l.id_laporan === Number(id)),
@@ -138,15 +144,24 @@ const Laporan = {
     add(d) {
         const err = this.validate(d); if (err) return fail(err);
         const list = rows('lap');
-        const r = { id_laporan: nextId('lap', 'id_laporan'), ...this.clean(d), status: 'Aktif', foto: d.foto || '', dibuat: new Date().toISOString() };
-        list.push(r); return save('lap', list) ? done('Laporan berhasil disimpan dengan status Aktif.', r) : fail('Penyimpanan penuh. Gunakan foto yang lebih kecil.');
+        const r = { id_laporan: nextId('lap', 'id_laporan'), ...this.clean(d), status: 'Aktif', verifikasi: 'Menunggu', catatan: '', foto: d.foto || '', dibuat: new Date().toISOString() };
+        list.push(r); return save('lap', list) ? done('Laporan tersimpan dengan status Aktif dan menunggu verifikasi petugas.', r) : fail('Penyimpanan penuh. Gunakan foto yang lebih kecil.');
     },
-    update(id, d) {
+    update(id, d, resetVerif) {
         const err = this.validate(d); if (err) return fail(err);
         const list = rows('lap'), r = list.find(x => x.id_laporan === Number(id));
         if (!r) return fail('Laporan tidak ditemukan.');
         Object.assign(r, this.clean(d)); if (d.foto) r.foto = d.foto;
+        if (resetVerif) { r.verifikasi = 'Menunggu'; r.catatan = ''; } // revisi mahasiswa dikirim ulang ke petugas
         return save('lap', list) ? done('Laporan berhasil diperbarui.') : fail('Penyimpanan penuh.');
+    },
+    setVerifikasi(id, v, catatan) {
+        if (!VERIF.includes(v)) return fail('Status verifikasi tidak valid.');
+        if (v === 'Tidak Valid' && !(catatan || '').trim()) return fail('Alasan wajib diisi saat menandai laporan tidak valid.');
+        const list = rows('lap'), r = list.find(x => x.id_laporan === Number(id));
+        if (!r) return fail('Laporan tidak ditemukan.');
+        r.verifikasi = v; r.catatan = v === 'Tidak Valid' ? catatan.trim() : '';
+        return save('lap', list) ? done(`Verifikasi diubah menjadi ${v}.`) : fail('Gagal menyimpan.');
     },
     setStatus(id, status) {
         if (!STATUSES.includes(status)) return fail('Status tidak valid.');
@@ -171,11 +186,14 @@ const Laporan = {
     }
 };
 
-/* Hak akses: admin mengelola semua, mahasiswa hanya laporan miliknya */
+/* Hak akses: hanya petugas yang mengubah/menghapus laporan.
+   Mahasiswa hanya boleh merevisi laporan miliknya setelah petugas menandainya "Tidak Valid". */
 function canEdit(l) {
     const u = getActiveUser(); if (!u) return false;
-    return u.role === 'admin' || (u.role === 'mahasiswa' && l.pelapor?.nim === u.nim);
+    if (u.role === 'admin') return true;
+    return u.role === 'mahasiswa' && l.pelapor?.nim === u.nim && l.verifikasi === 'Tidak Valid';
 }
+const canDelete = () => getActiveUser()?.role === 'admin';
 
 /* ---------- data uji ---------- */
 function seedIfEmpty() {
@@ -183,7 +201,7 @@ function seedIfEmpty() {
     ['kat', 'pel', 'lap'].forEach(n => localStorage.removeItem(T[n]));
     localStorage.removeItem(T.seq);
     ['Elektronik', 'Dokumen & Kartu', 'Dompet & Aksesori', 'Kendaraan & Kunci', 'Tas & Perlengkapan', 'Lainnya'].forEach(n => Kategori.add(n));
-    [['Rizky Pratama', '3312501011', '081234560011'], ['Nadia Putri', '3312501024', 'nadia.putri@students.polibatam.ac.id'], ['Petugas Keamanan', '0000000001', '081234567890']]
+    [['Rizky Pratama', '3312501011', '081234560011'], ['Nadia Putri', '3312501024', 'nadia.putri@students.polibatam.ac.id'], ['Petugas Keamanan', '0000000001', '081572877012']]
         .forEach(([nama, nim, kontak]) => Pelapor.add({ nama, nim, kontak }));
     const K = n => Kategori.all().find(k => k.nama_kategori.startsWith(n)).id_kategori;
     const P = [1, 2, 3];
@@ -199,28 +217,29 @@ function seedIfEmpty() {
     ];
     S.forEach(([, tipe, kat, nama, lokasi, ago, ciri, foto, status, pel]) => {
         const r = Laporan.add({ tipe, id_kategori: K(kat), id_pelapor: pel, nama_barang: nama, tanggal: todayISO(-ago), lokasi, ciri, kontak: Pelapor.get(pel).kontak, foto });
-        Laporan.setStatus(r.data.id_laporan, status);
+        Laporan.setStatus(r.data.id_laporan, status); Laporan.setVerifikasi(r.data.id_laporan, 'Valid');
     });
     localStorage.setItem(T.seed, '1');
 }
 
 /* ---------- tampilan bersama ---------- */
+const verifChip = v => `<span class="status status--v-${v === 'Valid' ? 'valid' : v === 'Menunggu' ? 'menunggu' : 'tidak'}">${v === 'Menunggu' ? 'Menunggu verifikasi' : v}</span>`;
 const statusChip = s => `<span class="status status--${esc(s.toLowerCase())}">${esc(s)}</span>`;
 function createHTMLCard(item, isAdminMsg = false) {
     if (isAdminMsg) return `<article class="notice-card">
         <p class="notice-card__tag">${esc(item.kategori || 'INFO')} &middot; ${esc(item.tanggal || '')}</p>
         <h3>${esc(item.judul)}</h3><p>${esc(item.isi)}</p></article>`;
     const hilang = item.tipe === 'Hilang';
-    const actions = canEdit(item) ? `<div class="report-card__actions">
-        <a class="chip-btn" href="lapor.html?edit=${item.id_laporan}"><i class="fa-solid fa-pen"></i> Ubah</a>
-        <button type="button" class="chip-btn chip-btn--danger" onclick="hapusLaporanUI(${item.id_laporan})"><i class="fa-solid fa-trash"></i> Hapus</button></div>` : '';
+    const actions = (canEdit(item) || canDelete()) ? `<div class="report-card__actions">
+        ${canEdit(item) ? `<a class="chip-btn" href="lapor.html?edit=${item.id_laporan}"><i class="fa-solid fa-pen"></i> ${canDelete() ? 'Ubah' : 'Revisi'}</a>` : ''}
+        ${canDelete() ? `<button type="button" class="chip-btn chip-btn--danger" onclick="hapusLaporanUI(${item.id_laporan})"><i class="fa-solid fa-trash"></i> Hapus</button>` : ''}</div>` : '';
     return `<article class="report-card">
         <a class="report-card__media" href="detail-laporan.html?id=${item.id_laporan}" aria-label="Lihat detail ${esc(item.nama_barang)}">
             <span class="badge ${hilang ? 'badge--lost' : 'badge--found'}">${esc(item.tipe)}</span>
             <img src="${esc(item.foto || PLACEHOLDER_IMAGE)}" alt="${esc(item.nama_barang)}" loading="lazy" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'">
         </a>
         <div class="report-card__body">
-            <div class="report-card__row"><span class="item-cat">${esc(item.kategori)}</span>${statusChip(item.status)}</div>
+            <div class="report-card__row"><span class="item-cat">${esc(item.kategori)}</span><span>${verifChip(item.verifikasi)} ${statusChip(item.status)}</span></div>
             <h3 class="report-card__title">${esc(item.nama_barang)}</h3>
             <p class="report-card__meta"><i class="fa-solid fa-location-dot"></i> ${esc(item.lokasi)} <span>&bull;</span> ${esc(fmtTanggal(item.tanggal))}</p>
             <p class="report-card__desc">${esc(item.ciri)}</p>
@@ -229,15 +248,17 @@ function createHTMLCard(item, isAdminMsg = false) {
         </div></article>`;
 }
 function hapusLaporanUI(id, after) {
+    if (!canDelete()) return showToast('Hanya petugas yang dapat menghapus laporan.', 'err');
     if (!confirm('Hapus laporan ini? Tindakan tidak dapat dibatalkan.')) return;
     const r = Laporan.remove(id);
     showToast(r.msg, r.ok ? 'ok' : 'err');
     if (r.ok) { if (after) after(); else if ($('reportContainer')) renderDaftar(); }
 }
-function hubungiWA(kontak, nama) {
-    const pesan = `Halo, saya melihat laporan "${nama}" di FindIt Polibatam dan ingin menanyakannya.`;
-    const num = String(kontak).replace(/\D/g, '').replace(/^0/, '62');
-    window.open(`https://wa.me/${/@/.test(kontak) ? ADMIN_WA : num}?text=${encodeURIComponent(pesan)}`, '_blank', 'noopener');
+/* Verifikasi/klaim barang selalu dialihkan ke WhatsApp petugas (ADMIN_WA) */
+function hubungiWA(id) {
+    const l = Laporan.get(id); if (!l) return;
+    const pesan = `Halo Petugas FindIt, saya ingin verifikasi laporan #${l.id_laporan}: "${l.nama_barang}" (${l.tipe}, ${l.lokasi}, ${fmtTanggal(l.tanggal)}).`;
+    window.open(`https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`, '_blank', 'noopener');
 }
 function fillKategoriSelect(sel, placeholder) {
     if (!sel) return;
@@ -278,22 +299,31 @@ function renderDetail() {
     root.innerHTML = `<article class="panel detail-card">
         <div class="detail-media"><img src="${esc(l.foto || PLACEHOLDER_IMAGE)}" alt="${esc(l.nama_barang)}" onerror="this.onerror=null;this.src='${PLACEHOLDER_IMAGE}'"></div>
         <div class="detail-info">
-            <div class="report-card__row"><span class="item-cat">${esc(l.kategori)}</span>${statusChip(l.status)}</div>
+            <div class="report-card__row"><span class="item-cat">${esc(l.kategori)}</span><span>${verifChip(l.verifikasi)} ${statusChip(l.status)}</span></div>
             <h2 class="detail-title">${esc(l.nama_barang)}</h2>
             <p class="detail-type">${l.tipe === 'Hilang' ? 'Barang hilang' : 'Barang ditemukan'} &middot; Laporan #${l.id_laporan}</p>
             <dl class="detail-list">
                 ${row('Tanggal kejadian', esc(fmtTanggal(l.tanggal)))}${row('Lokasi', esc(l.lokasi))}
-                ${row('Ciri-ciri', esc(l.ciri))}${row('Pelapor', `${esc(l.pelapor.nama)} <small>(${esc(l.pelapor.nim)})</small>`)}${row('Kontak', esc(l.kontak))}
+                ${row('Ciri-ciri', esc(l.ciri))}${row('Pelapor', `${esc(l.pelapor.nama)} <small>(${esc(l.pelapor.nim)})</small>`)}${row('Kontak pelapor', `${esc(l.kontak)} <small>(hubungi manual)</small>`)}
             </dl>
+            ${l.verifikasi === 'Tidak Valid' ? `<div class="info-strip info-strip--warn"><i class="fa-solid fa-triangle-exclamation"></i><div><strong>Laporan ditandai tidak valid oleh petugas</strong><p>${esc(l.catatan)}${canEdit(l) && !admin ? ' Perbaiki laporan lalu kirim ulang untuk diverifikasi.' : ''}</p></div></div>` : ''}
             <div class="detail-actions">
-                <button type="button" class="button button-primary" onclick="hubungiWA('${esc(l.kontak)}','${esc(l.nama_barang).replace(/'/g, '')}')"><i class="fa-brands fa-whatsapp"></i> Hubungi</button>
-                ${canEdit(l) ? `<a class="button button-secondary" href="lapor.html?edit=${l.id_laporan}"><i class="fa-solid fa-pen"></i> Ubah</a>
-                <button type="button" class="button button-secondary" onclick="hapusLaporanUI(${l.id_laporan}, () => { flashNext('Laporan dihapus.'); location.href='daftar-laporan.html'; })"><i class="fa-solid fa-trash"></i> Hapus</button>` : ''}
+                <button type="button" class="button button-primary" onclick="hubungiWA(${l.id_laporan})"><i class="fa-brands fa-whatsapp"></i> Hubungi Admin</button>
+                ${canEdit(l) ? `<a class="button button-secondary" href="lapor.html?edit=${l.id_laporan}"><i class="fa-solid fa-pen"></i> ${admin ? 'Ubah' : 'Revisi laporan'}</a>` : ''}
+                ${admin ? `<button type="button" class="button button-secondary" onclick="hapusLaporanUI(${l.id_laporan}, () => { flashNext('Laporan dihapus.'); location.href='daftar-laporan.html'; })"><i class="fa-solid fa-trash"></i> Hapus</button>` : ''}
             </div>
-            ${admin ? `<div class="panel-soft detail-status"><label for="detailStatusSel">Perbarui status (petugas)</label>
+            ${admin ? `<div class="panel-soft detail-status"><label for="detailVerif">Verifikasi laporan (petugas)</label>
+                <div class="detail-status__row"><select id="detailVerif">${VERIF.map(v => `<option ${v === l.verifikasi ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+                <textarea id="detailCatatan" rows="2" placeholder="Alasan jika tidak valid (wajib)..." style="margin-top:10px;min-height:0">${esc(l.catatan)}</textarea>
+                <button type="button" class="button button-primary" id="btnVerif" style="margin-top:10px">Simpan verifikasi</button></div>
+            <div class="panel-soft detail-status"><label for="detailStatusSel">Perbarui status kasus (petugas)</label>
                 <div class="detail-status__row"><select id="detailStatusSel">${STATUSES.map(s => `<option ${s === l.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
                 <button type="button" class="button button-primary" id="btnStatus">Simpan</button></div></div>` : ''}
         </div></article>`;
+    $('btnVerif')?.addEventListener('click', () => {
+        const r = Laporan.setVerifikasi(l.id_laporan, $('detailVerif').value, $('detailCatatan').value);
+        showToast(r.msg, r.ok ? 'ok' : 'err'); if (r.ok) renderDetail();
+    });
     $('btnStatus')?.addEventListener('click', () => {
         const r = Laporan.setStatus(l.id_laporan, $('detailStatusSel').value);
         showToast(r.msg, r.ok ? 'ok' : 'err'); renderDetail();
@@ -332,7 +362,7 @@ function initFormLapor() {
     let editing = null;
     if (editId) {
         editing = Laporan.get(editId);
-        if (!editing || !canEdit(editing)) { flashNext('Anda tidak berhak mengubah laporan ini.', 'err'); return location.replace('daftar-laporan.html'); }
+        if (!editing || !canEdit(editing)) { flashNext('Laporan hanya dapat direvisi setelah petugas menandainya tidak valid.', 'err'); return location.replace('daftar-laporan.html'); }
         $('formTitle').textContent = 'Ubah laporan'; $('btnSubmitLaporan').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan perubahan';
         $('lap_tipe').value = editing.tipe; $('lap_kategori').value = editing.id_kategori; $('lap_nama').value = editing.nama_barang;
         $('lap_lokasi').value = editing.lokasi; $('lap_tanggal').value = editing.tanggal; $('lap_ciri').value = editing.ciri; $('lap_kontak').value = editing.kontak;
@@ -346,11 +376,12 @@ function initFormLapor() {
         let foto = '';
         const file = $('lap_foto').files?.[0];
         try { if (file) foto = await compressImage(file); } catch { btn.disabled = false; return showToast('Foto tidak dapat dibaca. Gunakan JPG atau PNG.', 'err'); }
+        if (!pel && !(editing && !admin)) { btn.disabled = false; return showToast('Akun tidak dikenali. Silakan login ulang.', 'err'); }
         const data = { tipe: $('lap_tipe').value, id_kategori: $('lap_kategori').value, id_pelapor: editing && !admin ? editing.id_pelapor : pel?.id_pelapor, nama_barang: $('lap_nama').value, lokasi: $('lap_lokasi').value, tanggal: $('lap_tanggal').value, ciri: $('lap_ciri').value, kontak: $('lap_kontak').value, foto };
-        const r = editing ? Laporan.update(editing.id_laporan, data) : Laporan.add(data);
+        const r = editing ? Laporan.update(editing.id_laporan, data, !admin) : Laporan.add(data);
         btn.disabled = false;
         if (!r.ok) return showToast(r.msg, 'err');
-        flashNext(r.msg);
+        flashNext(editing && !admin ? 'Revisi terkirim. Laporan menunggu verifikasi ulang petugas.' : r.msg);
         location.href = 'detail-laporan.html?id=' + (editing ? editing.id_laporan : r.data.id_laporan);
     });
 }
@@ -406,7 +437,8 @@ function landingRender(category, query) {
         <div class="item-card__body"><span class="item-tag">${esc(l.kategori)} &middot; ${esc(l.tipe)}</span>
         <h3 class="item-card__title">${esc(l.nama_barang)}</h3>
         <p class="item-card__meta"><i class="fa-solid fa-location-dot"></i><span>${esc(l.lokasi)} &bull; ${esc(fmtTanggal(l.tanggal))}</span></p>
-        <div class="item-card__action"><a class="btn-pill btn-pill--claim" href="detail-laporan.html?id=${l.id_laporan}">Lihat Detail</a></div></div></article>`).join('')
+        <p class="item-card__contact"><i class="fa-solid fa-address-book"></i> Kontak pelapor: <strong>${esc(l.kontak)}</strong> <small>(hubungi manual)</small></p>
+        <div class="item-card__action item-card__action--duo"><a class="btn-pill btn-pill--white" href="detail-laporan.html?id=${l.id_laporan}">Detail</a><button type="button" class="btn-pill btn-pill--claim" onclick="hubungiWA(${l.id_laporan})"><i class="fa-brands fa-whatsapp"></i> Hubungi Admin</button></div></div></article>`).join('')
         : `<p class="landing-empty">Data tidak ditemukan. Coba kata kunci atau kategori lain.</p>`;
 }
 const landing = { cat: '', q: '' };

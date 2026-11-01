@@ -269,3 +269,7 @@ button:disabled { opacity: .6; cursor: progress; }
 .tab[hidden], [hidden] { display: none !important; }
 @media (max-width: 1000px) { .filter-bar, .filter-bar--rekap { grid-template-columns: 1fr 1fr; } .detail-card, .crud-grid { grid-template-columns: 1fr; } .detail-info { padding: 0 8px 8px; } }
 @media (max-width: 720px) { .filter-bar, .filter-bar--rekap { grid-template-columns: 1fr; } #tab-dashboard .metric-grid { grid-template-columns: 1fr !important; } .detail-row { grid-template-columns: 1fr; gap: 2px; } }
+.status--v-valid { background: var(--ok-soft); color: var(--ok); }
+.status--v-menunggu { background: var(--sand); color: var(--muted); }
+.status--v-tidak { background: var(--danger-soft); color: var(--danger); }
+.info-strip--warn { background: var(--danger-soft); } .info-strip--warn > i { color: var(--danger); }

@@ -1134,3 +1134,9 @@ button {
 .item-card__media { display: block; }
 .landing-empty { grid-column: 1 / -1; text-align: center; padding: 56px 24px; color: #64748B; background: #fff; border: 1px dashed #CBD5E1; border-radius: 32px; }
 .search-tags { flex-wrap: wrap; }
+.item-card__contact { font-size: .8rem; color: #64748B; margin: 10px 0 0; }
+.item-card__contact i { color: #0284C7; margin-right: 4px; }
+.item-card__contact strong { color: #0F172A; font-weight: 600; word-break: break-all; }
+.item-card__contact small { display: block; margin-top: 2px; color: #94A3B8; }
+.item-card__action--duo { display: flex; gap: 8px; }
+.item-card__action--duo .btn-pill { flex: 1; padding-left: 16px; padding-right: 16px; white-space: nowrap; justify-content: center; }
