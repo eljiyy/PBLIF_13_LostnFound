@@ -36,7 +36,7 @@
             <div class="top-actions">
                 <label class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="search" id="headerSearch" placeholder="Cari di halaman..." aria-label="Cari di halaman">
+                    <input type="search" id="headerSearch" placeholder="Cari barang, tekan Enter..." aria-label="Cari di halaman">
                 </label>
                 <a class="icon-button" href="kontak.html" title="Pusat bantuan" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
                 <a class="user-chip" href="login.html" onclick="sessionStorage.removeItem('activeUser')" title="Keluar dari akun">
@@ -125,12 +125,6 @@
             if (!nama || !pesan) return;
             alert('Pesan berhasil disiapkan di pratinjau FindIt. Untuk pengiriman nyata, form perlu dihubungkan ke backend.');
             cf.reset();
-        });
-    }
-    const hs = document.getElementById('headerSearch');
-    if (hs) {
-        hs.addEventListener('input', e => {
-            if (e.target.value.trim()) window.location.href = 'daftar-laporan.html?q=' + encodeURIComponent(e.target.value.trim());
         });
     }
 </script>

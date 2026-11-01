@@ -3,257 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - FindIt</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#F8FAFC">
+    <title>Admin | FindIt Polibatam</title>
     <link rel="stylesheet" href="../css/PBL.css">
-    <style>
-        .main-content { overflow-y: auto; }
-        .soft-card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow-card); padding: 24px; transition: transform .3s, box-shadow .3s; }
-        .soft-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-float); }
-        .btn-modern { padding: 12px 22px; border-radius: 50px; font-size: .85rem; font-weight: 600; font-family: var(--font-display); transition: .2s; cursor: pointer; border: 0; }
-        .btn-blue { background: var(--brand); color: #fff; } .btn-blue:hover { background: var(--brand-hover); }
-        .btn-green { background: var(--ok); color: #fff; } .btn-green:hover { background: #115E59; }
-        .btn-red { background: var(--danger-soft); color: var(--danger); } .btn-red:hover { background: var(--danger); color: #fff; }
-        .btn-ghost { background: var(--sand); color: var(--ink); } .btn-ghost:hover { background: var(--brand-soft); color: var(--brand); }
-        .modern-input { width: 100%; }
-        .tab-content.hidden { display: none; }
-        body .text-gray-400, body .text-gray-500, body .text-gray-200 { color: var(--muted); }
-        body .text-blue-400, body .text-blue-300 { color: var(--brand); }
-        body .text-green-400, body .text-green-300 { color: var(--ok); }
-        body .text-red-400 { color: var(--danger); }
-        body .bg-gray-900 { background: var(--paper); }
-        body .border-gray-700, body .border-white\/5, body .border-white\/10 { border-color: var(--line); }
-        body .bg-white\/5 { background: var(--bg); }
-        body #modalDetail .bg-black { background: var(--sand); }
-        body #modalDetail img { opacity: 1; }
-        body #modalDetail .rounded-2xl { border-radius: 32px; }
-        body #modalDetail .bg-black\/50, body #modalDetail .bg-black\/70 { background: rgba(255,255,255,.92); color: var(--ink); }
-        body #modalDetail .bg-gray-900 { box-shadow: 0 30px 70px -10px rgba(15,23,42,.25); }
-        body #modalDetail #detailBadgeTipe { border-color: var(--line); }
-        body .bg-gradient-to-br { background: var(--brand-soft); border-color: transparent; }
-        body h3, body h4 { color: var(--ink); }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
-    <div class="app-shell">
-        <aside class="sidebar" aria-label="Navigasi admin">
-            <a class="brand-mark" href="PBL.html" aria-label="FindIt Beranda" title="FindIt"><i class="fa-solid fa-magnifying-glass-location"></i></a>
-            <nav class="side-nav">
-                <a href="#" role="button" data-label="Dashboard" aria-label="Dashboard" onclick="switchTab('dashboard'); return false;" id="nav-dashboard" class="nav-icon nav-item active"><i class="fa-solid fa-layer-group"></i></a>
-                <a href="#" role="button" data-label="Validasi laporan" aria-label="Validasi laporan" onclick="switchTab('laporan'); return false;" id="nav-laporan" class="nav-icon nav-item"><i class="fa-solid fa-list-check"></i></a>
-                <a href="#" role="button" data-label="Broadcast berita" aria-label="Broadcast berita" onclick="switchTab('berita'); return false;" id="nav-berita" class="nav-icon nav-item"><i class="fa-solid fa-broadcast-tower"></i></a>
-            </nav>
-            <div class="side-spacer"></div>
-            <div class="sidebar-bottom">
-                <a href="#" role="button" class="nav-item" data-label="Keluar" aria-label="Keluar" onclick="logoutAdmin(); return false;"><i class="fa-solid fa-right-from-bracket"></i></a>
-            </div>
-        </aside>
-
-        <main class="app-main main-content">
-            <header class="topbar">
-                <div>
-                    <div class="eyebrow">FindIt Portal · Politeknik Negeri Batam</div>
-                    <h1 class="page-title">Workspace Admin</h1>
-                    <p class="text-sm" style="color:var(--muted);margin-top:4px" id="dateDisplay">Hari ini</p>
-                </div>
-                <div class="top-actions">
-                    <a class="icon-button" href="kontak.html" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
-                    <img src="../images/pasFotoFitra.jpeg" alt="Foto admin" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid var(--line)">
-                </div>
-            </header>
-            <div class="page-content">
-            <section id="tab-dashboard" class="tab-content block">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="soft-card">
-                        <p class="text-sm text-gray-400 mb-2">Total Database Data</p>
-                        <h3 id="statTotal" class="text-4xl font-bold">0</h3>
-                    </div>
-                    <div class="soft-card bg-gradient-to-br from-blue-900/40 to-transparent border-blue-500/30">
-                        <p class="text-sm text-blue-300 mb-2">Antrean Validasi (Pending)</p>
-                        <h3 id="statPending" class="text-4xl font-bold text-blue-400">0</h3>
-                    </div>
-                    <div class="soft-card bg-gradient-to-br from-green-900/40 to-transparent border-green-500/30">
-                        <p class="text-sm text-green-300 mb-2">Kasus Terselesaikan</p>
-                        <h3 id="statSelesai" class="text-4xl font-bold text-green-400">0</h3>
-                    </div>
-                </div>
-                <div class="soft-card">
-                    <h3 class="font-semibold text-lg mb-2">Aktivitas Sistem</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed max-w-3xl">Pastikan Anda selalu memeriksa laporan yang berada di tab <strong>"Validasi Laporan"</strong>. Laporan yang belum divalidasi tidak akan terlihat di halaman aplikasi mahasiswa.</p>
-                </div>
-            </section>
-
-            <section id="tab-laporan" class="tab-content hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-semibold text-xl">Lalu Lintas Data Laporan</h3>
-                    <button onclick="renderTabelAdmin()" class="btn-modern btn-ghost"><i class="fa-solid fa-rotate mr-2"></i>Segarkan Data</button>
-                </div>
-                <div id="gridDataAdmin" class="grid grid-cols-1 lg:grid-cols-2 gap-5"></div>
-            </section>
-
-            <section id="tab-berita" class="tab-content hidden">
-                <h3 class="font-semibold text-xl mb-6">Penyiaran Informasi</h3>
-                <div class="soft-card max-w-2xl">
-                    <form onsubmit="prosesTambahBerita(event)" class="flex flex-col gap-5">
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block uppercase">Judul Informasi</label>
-                            <input type="text" id="b_judul" required class="modern-input" placeholder="Masukkan judul singkat...">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block uppercase">Kategori Pesan</label>
-                            <select id="b_kategori" required class="modern-input text-gray-200">
-                                <option value="INFO" class="text-black">Informasi Umum</option>
-                                <option value="PENTING" class="text-black">Pemberitahuan Penting</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-400 mb-2 block uppercase">Isi Pesan / Instruksi</label>
-                            <textarea id="b_isi" rows="4" required class="modern-input resize-none" placeholder="Tuliskan detail..."></textarea>
-                        </div>
-                        <button type="submit" class="btn-modern btn-blue py-3 mt-2 font-bold">Siarkan Sekarang <i class="fa-solid fa-paper-plane ml-2"></i></button>
-                    </form>
-                </div>
-            </section>
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL DETAIL -->
-    <div id="modalDetail" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 px-4 opacity-0 transition-opacity">
-        <div class="bg-gray-900 border border-gray-700 w-full max-w-3xl rounded-2xl flex flex-col md:flex-row overflow-hidden shadow-2xl relative">
-            <button onclick="tutupDetail()" class="absolute top-4 right-4 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 transition z-50"><i class="fa-solid fa-xmark"></i></button>
-            <div class="w-full md:w-5/12 bg-black relative">
-                <img id="detailFoto" src="" class="w-full h-64 md:h-full object-cover opacity-80">
-                <span id="detailBadgeTipe" class="absolute bottom-4 left-4 bg-black/70 text-xs px-3 py-1 rounded-full border"></span>
-            </div>
-            <div class="w-full md:w-7/12 p-8 overflow-y-auto max-h-[80vh]">
-                <p id="detailStatus" class="text-[10px] font-bold tracking-widest mb-1"></p>
-                <h3 id="detailNamaBarang" class="text-2xl font-bold mb-4">Nama</h3>
-                <div class="bg-white/5 rounded-xl p-4 mb-4 border border-white/5">
-                    <p class="text-[10px] text-gray-500 uppercase mb-1">Pelapor</p>
-                    <p id="detailPelapor" class="font-medium text-sm">Nama</p>
-                    <p id="detailNim" class="text-xs text-gray-400">NIM</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase mb-1">Tanggal</p>
-                        <p id="detailTanggal" class="font-medium text-sm">Tgl</p>
-                    </div>
-                    <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-                        <p class="text-[10px] text-gray-500 uppercase mb-1">Lokasi</p>
-                        <p id="detailLokasi" class="font-medium text-sm truncate">Lok</p>
-                    </div>
-                </div>
-                <div class="bg-white/5 rounded-xl p-4 mb-6 border border-white/5">
-                    <p class="text-[10px] text-gray-500 uppercase mb-1">Ciri-ciri / Keterangan</p>
-                    <p id="detailCiri" class="text-sm font-light leading-relaxed">Ciri</p>
-                </div>
-                <div id="detailAksiModal" class="flex gap-3 pt-4 border-t border-white/10"></div>
-            </div>
+<div class="app-shell">
+    <aside class="sidebar" aria-label="Navigasi admin">
+        <a class="brand-mark" href="PBL.html" aria-label="FindIt Beranda" title="FindIt"><i class="fa-solid fa-magnifying-glass-location"></i></a>
+        <nav class="side-nav">
+            <a href="#" class="nav-item active" data-tab="dashboard" data-label="Dashboard" aria-label="Dashboard"><i class="fa-solid fa-layer-group"></i></a>
+            <a href="#" class="nav-item" data-tab="laporan" data-label="Laporan" aria-label="Laporan"><i class="fa-solid fa-list-check"></i></a>
+            <a href="#" class="nav-item" data-tab="kategori" data-label="Kategori" aria-label="Kategori"><i class="fa-solid fa-tags"></i></a>
+            <a href="#" class="nav-item" data-tab="pelapor" data-label="Pelapor" aria-label="Pelapor"><i class="fa-solid fa-users"></i></a>
+            <a href="#" class="nav-item" data-tab="berita" data-label="Pengumuman" aria-label="Pengumuman"><i class="fa-solid fa-bullhorn"></i></a>
+            <a href="rekap.html" class="nav-item" data-label="Rekap laporan" aria-label="Rekap laporan"><i class="fa-solid fa-chart-simple"></i></a>
+        </nav>
+        <div class="side-spacer"></div>
+        <div class="sidebar-bottom">
+            <a href="#" class="nav-item" id="btnLogout" data-label="Keluar" aria-label="Keluar"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
-    </div>
+    </aside>
 
-    <script>
-        const activeUser = JSON.parse(sessionStorage.getItem('activeUser'));
-        if(!activeUser || activeUser.role !== 'admin') window.location.href = 'login.html';
-        document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    <main class="app-main">
+        <header class="topbar">
+            <div>
+                <div class="eyebrow">FindIt Portal · Politeknik Negeri Batam</div>
+                <h1 class="page-title">Workspace Petugas</h1>
+                <p class="page-subtitle" id="dateDisplay" style="display:block"></p>
+            </div>
+            <div class="top-actions">
+                <a class="button button-primary" href="lapor.html"><i class="fa-solid fa-plus"></i> Tambah laporan</a>
+            </div>
+        </header>
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(e => { e.classList.remove('block'); e.classList.add('hidden'); });
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden'); document.getElementById(`tab-${tabId}`).classList.add('block');
-            document.querySelectorAll('.nav-icon').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`nav-${tabId}`).classList.add('active');
-            if(tabId === 'laporan') renderTabelAdmin();
-            if(tabId === 'dashboard') hitungDashboard();
-        }
+        <div class="page-content">
+            <!-- DASHBOARD -->
+            <section id="tab-dashboard" class="tab">
+                <div class="metric-grid" style="grid-template-columns:repeat(4,1fr)">
+                    <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Total laporan</span><span class="stat-icon"><i class="fa-solid fa-folder-open"></i></span></div><div class="metric-value" id="stTotal">0</div></article>
+                    <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Aktif</span><span class="stat-icon orange"><i class="fa-solid fa-hourglass-half"></i></span></div><div class="metric-value" id="stAktif">0</div></article>
+                    <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Cocok</span><span class="stat-icon blue"><i class="fa-solid fa-link"></i></span></div><div class="metric-value" id="stCocok">0</div></article>
+                    <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Terselesaikan</span><span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span></div><div class="metric-value" id="stSelesai">0</div></article>
+                </div>
+                <section class="panel" style="margin-top:24px">
+                    <div class="panel-heading"><div><h3>Laporan terbaru</h3><p>Perbarui status langsung dari daftar ini.</p></div><a class="button button-secondary" href="rekap.html">Lihat rekap</a></div>
+                    <div class="table-wrap" id="dashLatest"></div>
+                </section>
+            </section>
 
-        function logoutAdmin() { if(confirm('Keluar dari Dasbor Admin?')) { sessionStorage.removeItem('activeUser'); window.location.href = 'login.html'; } }
+            <!-- LAPORAN -->
+            <section id="tab-laporan" class="tab" hidden>
+                <section class="panel filter-bar" aria-label="Filter laporan">
+                    <input type="search" id="fq" placeholder="Cari nama, kategori, atau lokasi..." aria-label="Cari">
+                    <select id="fkat" aria-label="Kategori"></select>
+                    <select id="ftipe" aria-label="Tipe"><option value="">Semua tipe</option><option>Hilang</option><option>Ditemukan</option></select>
+                    <select id="fstatus" aria-label="Status"><option value="">Semua status</option><option>Aktif</option><option>Cocok</option><option>Dikembalikan</option><option>Ditutup</option></select>
+                    <button type="button" class="button button-secondary" id="freset">Reset</button>
+                </section>
+                <section class="panel" style="margin-top:24px"><div class="table-wrap" id="lapTable"></div></section>
+            </section>
 
-        function hitungDashboard() {
-            const db = JSON.parse(localStorage.getItem('lostFoundLaporan')) || [];
-            document.getElementById('statTotal').innerText = db.length;
-            document.getElementById('statPending').innerText = db.filter(i => i.status === 'Pending').length;
-            document.getElementById('statSelesai').innerText = db.filter(i => i.status === 'Selesai').length;
-        }
+            <!-- KATEGORI -->
+            <section id="tab-kategori" class="tab" hidden>
+                <div class="crud-grid">
+                    <section class="panel">
+                        <div class="panel-heading"><div><h3 id="katTitle">Tambah kategori</h3><p>Nama kategori maksimal 50 karakter.</p></div></div>
+                        <form id="katForm" class="stack">
+                            <div class="field"><label for="katNama">Nama kategori <span class="required">*</span></label><input id="katNama" maxlength="50" required></div>
+                            <div class="form-actions" style="justify-content:flex-start"><button class="button button-primary" type="submit">Simpan</button><button class="button button-secondary" type="button" id="katBatal">Batal</button></div>
+                        </form>
+                    </section>
+                    <section class="panel"><div class="table-wrap" id="katTable"></div></section>
+                </div>
+            </section>
 
-        function renderTabelAdmin() {
-            const container = document.getElementById('gridDataAdmin');
-            const db = JSON.parse(localStorage.getItem('lostFoundLaporan')) || [];
-            container.innerHTML = '';
-            if(db.length === 0) { container.innerHTML = `<p class="col-span-full text-gray-500 text-sm">Tidak ada data laporan.</p>`; return; }
-            db.slice().reverse().forEach(item => {
-                let statusColor = item.status === 'Pending' ? 'text-blue-400' : (item.status === 'Valid' ? 'text-green-400' : 'text-gray-400');
-                container.innerHTML += `
-                    <div class="soft-card flex justify-between items-center group">
-                        <div class="flex items-center gap-4 w-3/4">
-                            <div class="w-12 h-12 rounded bg-black/50 overflow-hidden shrink-0">
-                                <img src="${item.buktiFile}" class="w-full h-full object-cover">
-                            </div>
-                            <div class="truncate pr-4">
-                                <h4 class="font-semibold text-sm truncate">${item.nama_barang}</h4>
-                                <p class="text-xs text-gray-400 truncate">${item.pelapor} &bull; ${item.tanggal}</p>
-                                <span class="text-[10px] font-bold ${statusColor} uppercase">${item.status}</span>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="lihatDetail(${item.id})" class="btn-modern btn-ghost"><i class="fa-solid fa-eye"></i></button>
-                            <button onclick="hapusLaporan(${item.id})" class="btn-modern btn-red"><i class="fa-solid fa-trash"></i></button>
-                        </div>
-                    </div>`;
-            });
-        }
+            <!-- PELAPOR -->
+            <section id="tab-pelapor" class="tab" hidden>
+                <div class="crud-grid">
+                    <section class="panel">
+                        <div class="panel-heading"><div><h3 id="pelTitle">Tambah pelapor</h3><p>Data pelapor dipakai pada setiap laporan.</p></div></div>
+                        <form id="pelForm" class="stack">
+                            <div class="field"><label for="pelNama">Nama <span class="required">*</span></label><input id="pelNama" maxlength="100" required></div>
+                            <div class="field"><label for="pelNim">NIM <span class="required">*</span></label><input id="pelNim" maxlength="20" required></div>
+                            <div class="field"><label for="pelKontak">Kontak <span class="required">*</span></label><input id="pelKontak" maxlength="50" placeholder="08xxxxxxxxxx atau email" required></div>
+                            <div class="form-actions" style="justify-content:flex-start"><button class="button button-primary" type="submit">Simpan</button><button class="button button-secondary" type="button" id="pelBatal">Batal</button></div>
+                        </form>
+                    </section>
+                    <section class="panel">
+                        <input type="search" id="pelCari" placeholder="Cari nama atau NIM..." aria-label="Cari pelapor" style="margin-bottom:16px">
+                        <div class="table-wrap" id="pelTable"></div>
+                    </section>
+                </div>
+            </section>
 
-        window.ubahStatus = function(id, newStatus) {
-            let db = JSON.parse(localStorage.getItem('lostFoundLaporan')) || [];
-            let index = db.findIndex(i => i.id === id);
-            if(index !== -1) {
-                if(confirm(newStatus === 'Valid' ? "Publikasikan Laporan?" : "Tutup Kasus?")) {
-                    db[index].status = newStatus; localStorage.setItem('lostFoundLaporan', JSON.stringify(db));
-                    renderTabelAdmin(); hitungDashboard(); tutupDetail();
-                }
-            }
-        };
-
-        window.hapusLaporan = function(id) {
-            if(confirm('Hapus permanen data ini?')) {
-                let db = JSON.parse(localStorage.getItem('lostFoundLaporan')) || [];
-                db = db.filter(i => i.id !== id); localStorage.setItem('lostFoundLaporan', JSON.stringify(db));
-                renderTabelAdmin(); hitungDashboard(); tutupDetail();
-            }
-        };
-
-        window.lihatDetail = function(id) {
-            const item = (JSON.parse(localStorage.getItem('lostFoundLaporan')) || []).find(i => i.id === id);
-            if(!item) return;
-            document.getElementById('detailFoto').src = item.buktiFile; document.getElementById('detailNamaBarang').innerText = item.nama_barang;
-            document.getElementById('detailPelapor').innerText = item.pelapor; document.getElementById('detailNim').innerText = item.nim;
-            document.getElementById('detailTanggal').innerText = item.tanggal; document.getElementById('detailLokasi').innerText = item.lokasi;
-            document.getElementById('detailCiri').innerText = item.ciri;
-            const badgeTipe = document.getElementById('detailBadgeTipe');
-            badgeTipe.innerText = item.tipe; badgeTipe.className = `absolute bottom-4 left-4 text-xs font-bold px-3 py-1 rounded-full border bg-black/70 ${item.tipe === 'Kehilangan' ? 'text-red-400 border-red-500' : 'text-green-400 border-green-500'}`;
-            const statusTxt = document.getElementById('detailStatus');
-            statusTxt.innerText = `STATUS: ${item.status}`;
-            statusTxt.className = `text-[10px] font-bold tracking-widest mb-1 uppercase ${item.status === 'Pending' ? 'text-blue-400' : (item.status === 'Valid' ? 'text-green-400' : 'text-gray-500')}`;
-            let aksi = '';
-            if(item.status === 'Pending') aksi += `<button onclick="ubahStatus(${item.id}, 'Valid')" class="btn-modern btn-blue flex-1">Validasi Data</button>`;
-            if (item.status === 'Valid') aksi += `<button onclick="ubahStatus(${item.id}, 'Selesai')" class="btn-modern btn-green flex-1">Tutup Kasus</button>`;
-            document.getElementById('detailAksiModal').innerHTML = aksi;
-            const modal = document.getElementById('modalDetail'); modal.classList.remove('hidden'); modal.classList.add('flex'); setTimeout(() => { modal.classList.remove('opacity-0'); modal.classList.add('opacity-100'); }, 10);
-        };
-
-        window.tutupDetail = function() {
-            const modal = document.getElementById('modalDetail'); modal.classList.remove('opacity-100'); modal.classList.add('opacity-0'); setTimeout(() => { modal.classList.remove('flex'); modal.classList.add('hidden'); }, 300);
-        };
-
-        window.prosesTambahBerita = function(e) {
-            e.preventDefault();
-            const beritaBaru = { id: Date.now(), tipeAdmin: true, judul: document.getElementById('b_judul').value, kategori: document.getElementById('b_kategori').value, isi: document.getElementById('b_isi').value, gambar: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80", tanggal: new Date().toLocaleDateString('id-ID') };
-            let db = JSON.parse(localStorage.getItem('adminBeritaPBL')) || []; db.push(beritaBaru); localStorage.setItem('adminBeritaPBL', JSON.stringify(db));
-            alert("Informasi disiarkan!"); e.target.reset(); switchTab('dashboard'); 
-        };
-
-        hitungDashboard();
-    </script>
+            <!-- PENGUMUMAN -->
+            <section id="tab-berita" class="tab" hidden>
+                <section class="panel form-panel">
+                    <div class="panel-heading"><div><h3>Siarkan pengumuman</h3><p>Tampil di bagian atas halaman database laporan.</p></div></div>
+                    <form id="newsForm" class="stack">
+                        <div class="field"><label for="b_judul">Judul <span class="required">*</span></label><input id="b_judul" maxlength="100" required></div>
+                        <div class="field"><label for="b_kategori">Kategori</label><select id="b_kategori"><option value="INFO">Informasi umum</option><option value="PENTING">Pemberitahuan penting</option></select></div>
+                        <div class="field"><label for="b_isi">Isi pesan <span class="required">*</span></label><textarea id="b_isi" rows="4" required></textarea></div>
+                        <div class="form-actions" style="justify-content:flex-start"><button class="button button-primary" type="submit"><i class="fa-solid fa-paper-plane"></i> Siarkan</button></div>
+                    </form>
+                    <div id="newsList" class="stack" style="margin-top:28px"></div>
+                </section>
+            </section>
+        </div>
+    </main>
+</div>
+<script src="../js/PBL.js"></script>
+<script src="../js/admin.js"></script>
 </body>
 </html>

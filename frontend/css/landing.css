@@ -1130,3 +1130,7 @@ button {
     transition: none !important;
   }
 }
+
+.item-card__media { display: block; }
+.landing-empty { grid-column: 1 / -1; text-align: center; padding: 56px 24px; color: #64748B; background: #fff; border: 1px dashed #CBD5E1; border-radius: 32px; }
+.search-tags { flex-wrap: wrap; }

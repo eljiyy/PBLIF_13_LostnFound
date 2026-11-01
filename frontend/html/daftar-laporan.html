@@ -37,9 +37,9 @@
         <div class="page-content">
             <div class="page-top-row">
                 <div>
-                    <div class="eyebrow">Laporan terverifikasi</div>
+                    <div class="eyebrow">Semua laporan</div>
                     <h2 class="page-title">Cari barang hilang dan temuan</h2>
-                    <p class="page-subtitle">Hanya laporan yang sudah divalidasi petugas yang tampil di sini.</p>
+                    <p class="page-subtitle">Telusuri laporan berdasarkan nama, kategori, lokasi, tipe, dan status.</p>
                 </div>
                 <a href="lapor.html" class="button button-primary"><i class="fa-solid fa-plus"></i> Buat laporan</a>
             </div>
@@ -47,20 +47,24 @@
             <div class="info-strip">
                 <i class="fa-solid fa-shield-halved"></i>
                 <div>
-                    <strong>Protokol keamanan data berjalan</strong>
-                    <p>Untuk mencegah laporan palsu, penambahan data langsung tidak tersedia di halaman ini. Setiap laporan baru wajib melalui formulir dan validasi petugas.</p>
+                    <strong>Hak akses laporan</strong>
+                    <p>Mahasiswa hanya dapat mengubah atau menghapus laporan miliknya. Status laporan diperbarui oleh petugas.</p>
                 </div>
             </div>
 
-            <section class="panel" style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
-                <input type="text" id="inputSearch" placeholder="Cari merk barang, lokasi, atau pelapor..." aria-label="Cari laporan">
-                <select id="filterTipe" aria-label="Filter kategori kasus">
-                    <option value="Semua">Semua Kategori Kasus</option>
-                    <option value="Kehilangan">Kasus Kehilangan Saja</option>
-                    <option value="Ditemukan">Kasus Penemuan Saja</option>
+            <section class="panel filter-bar" aria-label="Pencarian dan filter">
+                <input type="search" id="inputSearch" placeholder="Cari nama barang, kategori, atau lokasi..." aria-label="Cari laporan">
+                <select id="filterKategori" aria-label="Filter kategori"></select>
+                <select id="filterTipe" aria-label="Filter tipe">
+                    <option value="">Semua tipe</option><option>Hilang</option><option>Ditemukan</option>
                 </select>
+                <select id="filterStatus" aria-label="Filter status">
+                    <option value="">Semua status</option><option>Aktif</option><option>Cocok</option><option>Dikembalikan</option><option>Ditutup</option>
+                </select>
+                <button type="button" class="button button-secondary" id="btnResetFilter">Reset</button>
             </section>
 
+            <p class="result-count" id="resultCount" aria-live="polite"></p>
             <div id="reportContainer" class="card-grid"></div>
         </div>
         <footer class="footer-note">FindIt · Sistem Informasi Barang Hilang dan Temuan Kampus<br>Politeknik Negeri Batam · PBL</footer>
@@ -68,9 +72,5 @@
 </div>
 
 <script src="../js/PBL.js"></script>
-<script>
-    const q = new URLSearchParams(location.search).get('q');
-    if (q) document.getElementById('inputSearch').value = q;
-</script>
 </body>
 </html>

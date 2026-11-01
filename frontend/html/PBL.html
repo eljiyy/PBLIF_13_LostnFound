@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FindIt &amp; Found - Sistem Informasi Barang Hilang dan Temuan</title>
+  <title>Polibatam Lost &amp; Found - Sistem Informasi Barang Hilang dan Temuan</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="../css/landing.css">
 </head>
@@ -14,10 +14,10 @@
     <!-- SECTION 1: NAVBAR (STICKY & GLASSMORPHISM) -->
     <header class="navbar-container">
       <nav class="navbar" aria-label="Navigasi Utama">
-        <!-- Kiri: Logo Teks Tebal FindIt & Found berwarna #0284C7 -->
+        <!-- Kiri: Logo Teks Tebal Polibatam Lost & Found berwarna #0284C7 -->
         <a href="PBL.html" class="navbar__logo">
           <i class="fa-solid fa-cube"></i>
-          <span>FindIt</span>
+          <span>Polibatam Lost &amp; Found</span>
         </a>
 
         <!-- Tengah: Menu Navigasi Teks Sejajar -->
@@ -44,7 +44,7 @@
         <div class="hero__content">
           <div class="hero__badge">
             <span class="hero__badge-dot"></span>
-            <span>Sistem Resmi FindIt</span>
+            <span>Sistem Resmi Kampus Polibatam</span>
           </div>
 
           <!-- Tengah Kontainer: Teks Headline RAKSASA -->
@@ -52,7 +52,7 @@
 
           <!-- Bawah Headline: Teks Deskripsi Berukuran Sedang -->
           <p class="hero__desc">
-            Platform resmi FindIt untuk melaporkan barang hilang dan mengamankan barang temuan secara cepat, aman, dan terintegrasi.
+            Platform resmi civitas akademika Politeknik Negeri Batam untuk melaporkan barang hilang dan mengamankan barang temuan secara cepat, aman, dan terintegrasi.
           </p>
         </div>
 
@@ -78,7 +78,7 @@
               <img src="https://images.unsplash.com/photo-1548544149-4835e62ee5b3?crop=entropy&cs=tinysrgb&fit=crop&w=120&h=120&q=80" alt="Mahasiswa Polibatam" class="floating-card__avatar">
             </div>
             <div class="floating-card__meta">
-              <strong>50+ Barang</strong>
+              <strong>500+ Barang</strong>
               <span>Telah Dikembalikan</span>
             </div>
           </div>
@@ -92,7 +92,7 @@
           <input 
             type="text" 
             id="searchInput" 
-            placeholder="Cari barang... (contoh: Dompet Hitam, KTM, Kunci Motor)" 
+            placeholder="Cari barang, kategori, atau lokasi (contoh: dompet, KTM, perpustakaan)" 
             autocomplete="off"
             aria-label="Cari barang temuan atau hilang"
           >
@@ -117,7 +117,7 @@
           <!-- Kolom Kiri: Tiga baris angka metrik besar bersusun vertikal -->
           <div class="metrics-column">
             <div class="metric-card-item">
-              <span class="metric-number">50+</span>
+              <span class="metric-number">1.2K</span>
               <span class="metric-desc">Total Laporan Insiden Kehilangan &amp; Temuan Resmi</span>
             </div>
             <div class="metric-card-item">
@@ -147,8 +147,8 @@
       <section class="gallery-section" id="galeri-temuan" aria-label="Barang Temuan Terbaru">
         <div class="section-head">
           <div class="section-head__left">
-            <span class="section-eyebrow">Inventaris Terbaru</span>
-            <h2 class="section-heading">Barang Temuan Terbaru</h2>
+            <span class="section-eyebrow">Dari database FindIt</span>
+            <h2 class="section-heading">Laporan Terbaru</h2>
           </div>
           <a href="daftar-laporan.html" class="btn-pill btn-pill--white">
             <span>Lihat Semua Laporan</span>
@@ -157,132 +157,9 @@
         </div>
 
         <!-- Layout Grid 3 Kolom Sejajar Rapi -->
-        <div class="gallery-grid" id="itemsGrid">
-          
-          <!-- Card 1: Laptop ASUS ROG -->
-          <article class="item-card" data-category="Elektronik" data-title="Laptop ASUS ROG">
-            <div class="item-card__media">
-              <img src="../images/Laptop.png" alt="Laptop ASUS ROG yang ditemukan di kampus" loading="lazy">
-            </div>
-            <div class="item-card__body">
-              <span class="item-tag">Elektronik</span>
-              <h3 class="item-card__title">Laptop ASUS ROG</h3>
-              <p class="item-card__meta">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Gedung Tower Lantai 5 &bull; Hari ini, 10:00 WIB</span>
-              </p>
-              <div class="item-card__action">
-                <button type="button" class="btn-pill btn-pill--claim" onclick="openClaimModal('Laptop ASUS ROG', 'Elektronik', 'Gedung Tower Lantai 5', '../images/Laptop.png')">
-                  Klaim Barang Ini
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 2: Dompet Kulit Pria -->
-          <article class="item-card" data-category="Aksesoris" data-title="Dompet Kulit Montblanc">
-            <div class="item-card__media">
-              <img src="../images/dompet kulit.png" alt="Dompet kulit cokelat ditemukan di kantin" loading="lazy">
-            </div>
-            <div class="item-card__body">
-              <span class="item-tag">Aksesoris</span>
-              <h3 class="item-card__title">Dompet Kulit Cokelat</h3>
-              <p class="item-card__meta">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Kantin Gedung Utama &bull; Hari ini, 08:30 WIB</span>
-              </p>
-              <div class="item-card__action">
-                <button type="button" class="btn-pill btn-pill--claim" onclick="openClaimModal('Dompet Kulit Cokelat', 'Aksesoris', 'Kantin Gedung Utama', '../images/dompet kulit.png')">
-                  Klaim Barang Ini
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 3: Kunci Motor Honda -->
-          <article class="item-card" data-category="Kendaraan" data-title="Kunci Motor Honda">
-            <div class="item-card__media">
-              <img src="../images/kunci motor.png" alt="Kunci motor Honda dengan gantungan hitam" loading="lazy">
-            </div>
-            <div class="item-card__body">
-              <span class="item-tag">Kendaraan</span>
-              <h3 class="item-card__title">Kunci Motor Honda Vario</h3>
-              <p class="item-card__meta">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Area Parkir Timur &bull; Kemarin, 16:45 WIB</span>
-              </p>
-              <div class="item-card__action">
-                <button type="button" class="btn-pill btn-pill--claim" onclick="openClaimModal('Kunci Motor Honda Vario', 'Kendaraan', 'Area Parkir Timur', '../images/kunci motor.png')">
-                  Klaim Barang Ini
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 4: Wireless Headphones -->
-          <article class="item-card" data-category="Elektronik" data-title="Headphone Sony Wireless">
-            <div class="item-card__media">
-              <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=crop&w=600&h=420&q=80" alt="Headphone nirkabel warna hitam" loading="lazy">
-            </div>
-            <div class="item-card__body">
-              <span class="item-tag">Elektronik</span>
-              <h3 class="item-card__title">Headphone Sony WH-1000XM</h3>
-              <p class="item-card__meta">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Perpustakaan Lt. 2 &bull; Kemarin, 14:15 WIB</span>
-              </p>
-              <div class="item-card__action">
-                <button type="button" class="btn-pill btn-pill--claim" onclick="openClaimModal('Headphone Sony WH-1000XM', 'Elektronik', 'Perpustakaan Lt. 2', 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?crop=entropy&cs=tinysrgb&fit=crop&w=600&h=420&q=80')">
-                  Klaim Barang Ini
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 5: Tas Ransel Laptop -->
-          <article class="item-card" data-category="Perlengkapan" data-title="Tas Ransel Hitam">
-            <div class="item-card__media">
-              <img src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?crop=entropy&cs=tinysrgb&fit=crop&w=600&h=420&q=80" alt="Tas ransel hitam di laboratorium" loading="lazy">
-            </div>
-            <div class="item-card__body">
-              <span class="item-tag">Perlengkapan</span>
-              <h3 class="item-card__title">Tas Ransel Laptop Hitam</h3>
-              <p class="item-card__meta">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Lab Robotika &bull; 2 hari lalu</span>
-              </p>
-              <div class="item-card__action">
-                <button type="button" class="btn-pill btn-pill--claim" onclick="openClaimModal('Tas Ransel Laptop Hitam', 'Perlengkapan', 'Lab Robotika', 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?crop=entropy&cs=tinysrgb&fit=crop&w=600&h=420&q=80')">
-                  Klaim Barang Ini
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <!-- Card 6: Smartwatch -->
-          <article class="item-card" data-category="Elektronik" data-title="Smartwatch Series">
-            <div class="item-card__media">
-              <img src="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?crop=entropy&cs=tinysrgb&fit=crop&w=600&h=420&q=80" alt="Jam tangan pintar ditemukan di ruang kelas" loading="lazy">
-            </div>
-            <div class="item-card__body">
-              <span class="item-tag">Elektronik</span>
-              <h3 class="item-card__title">Smartwatch Hitam Digital</h3>
-              <p class="item-card__meta">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>Ruang Kelas Tower 304 &bull; 2 hari lalu</span>
-              </p>
-              <div class="item-card__action">
-                <button type="button" class="btn-pill btn-pill--claim" onclick="openClaimModal('Smartwatch Hitam Digital', 'Elektronik', 'Ruang Kelas Tower 304', 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?crop=entropy&cs=tinysrgb&fit=crop&w=600&h=420&q=80')">
-                  Klaim Barang Ini
-                </button>
-              </div>
-            </div>
-          </article>
-
-        </div>
+        <div class="gallery-grid" id="itemsGrid"></div>
       </section>
 
-      <!-- SECTION 6: HOW IT WORKS (ALUR 3 LANGKAH) -->
       <section class="how-section" id="alur-sop" aria-label="Alur Tiga Langkah">
         <div class="section-head" style="justify-content: center; text-align: center; margin-bottom: 52px;">
           <div>
@@ -355,8 +232,8 @@
           <div class="footer__institution">
             <img src="../images/Logo Pbl FindIt.jpg" alt="Logo Resmi FindIt Politeknik Negeri Batam" class="footer__logo">
             <div class="footer__copyright">
-              <div><strong>FindIt</strong></div>
-              <div>&copy;  Yusuf Fauzi &amp; Fitra Luqmanul Safa. All rights reserved.</div>
+              <div><strong>Politeknik Negeri Batam</strong></div>
+              <div>&copy; 2026 FindIt Lost &amp; Found. All rights reserved.</div>
             </div>
           </div>
         </div>
@@ -399,7 +276,7 @@
       </div>
 
       <div class="modal-actions">
-        <a href="https://wa.me/6281572877012?text=Halo%20Petugas%20Keamanan%20Polibatam,%20saya%20ingin%20mengonfirmasi%20klaim%20barang%20temuan." target="_blank" rel="noopener noreferrer" class="btn-pill btn-pill--primary">
+        <a href="https://wa.me/6281234567890?text=Halo%20Petugas%20Keamanan%20Polibatam,%20saya%20ingin%20mengonfirmasi%20klaim%20barang%20temuan." target="_blank" rel="noopener noreferrer" class="btn-pill btn-pill--primary">
           <i class="fa-brands fa-whatsapp"></i>
           <span>Hubungi Pos Satpam</span>
         </a>
@@ -458,64 +335,7 @@
       }
     });
 
-    // Quick Search & Tag Filter
-    function filterCategory(category, buttonEl) {
-      // Update active tag styling
-      document.querySelectorAll('.tag-pill').forEach(btn => btn.classList.remove('active'));
-      if (buttonEl) buttonEl.classList.add('active');
-
-      const cards = document.querySelectorAll('.item-card');
-      cards.forEach(card => {
-        const itemCat = card.getAttribute('data-category');
-        if (category === 'Semua' || itemCat === category) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    }
-
-    function handleSearch(event) {
-      event.preventDefault();
-      const query = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-      const cards = document.querySelectorAll('.item-card');
-      
-      let foundAny = false;
-      cards.forEach(card => {
-        const title = (card.getAttribute('data-title') || '').toLowerCase();
-        const cat = (card.getAttribute('data-category') || '').toLowerCase();
-        if (!query || title.includes(query) || cat.includes(query)) {
-          card.style.display = 'flex';
-          foundAny = true;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-
-      // Smooth scroll to gallery
-      const gallery = document.getElementById('galeri-temuan');
-      if (gallery) {
-        gallery.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    // Live search input filtering as user types
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.item-card');
-        cards.forEach(card => {
-          const title = (card.getAttribute('data-title') || '').toLowerCase();
-          const cat = (card.getAttribute('data-category') || '').toLowerCase();
-          if (!query || title.includes(query) || cat.includes(query)) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    }
   </script>
+  <script src="../js/PBL.js"></script>
 </body>
 </html>

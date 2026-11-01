@@ -36,7 +36,7 @@
             <div class="top-actions">
                 <label class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="search" id="headerSearch" placeholder="Cari di halaman..." aria-label="Cari di halaman">
+                    <input type="search" id="headerSearch" placeholder="Cari barang, tekan Enter..." aria-label="Cari di halaman">
                 </label>
                 <a class="icon-button" href="kontak.html" title="Pusat bantuan" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
                 <a class="user-chip" href="login.html" onclick="sessionStorage.removeItem('activeUser')" title="Keluar dari akun">
@@ -54,7 +54,7 @@
                 <div>
                     <div class="eyebrow">Formulir mahasiswa</div>
                     <h2 class="page-title">Catat barang hilang atau temuan</h2>
-                    <p class="page-subtitle">Berikan informasi yang akurat. Laporan baru akan masuk ke antrean validasi.</p>
+                    <p class="page-subtitle">Berikan informasi yang akurat. Laporan tersimpan dengan status Aktif dan langsung dapat dicari.</p>
                 </div>
                 <a href="PBL.html" class="button button-secondary"><i class="fa-solid fa-arrow-left"></i> Kembali</a>
             </div>
@@ -62,7 +62,7 @@
             <div class="info-strip">
                 <i class="fa-solid fa-shield-halved"></i>
                 <div>
-                    <strong>Data laporan diperiksa sebelum ditampilkan</strong>
+                    <strong>Petugas memperbarui status laporan</strong>
                     <p>Jangan cantumkan kata sandi, PIN, atau informasi pribadi sensitif dalam deskripsi. Pastikan lokasi dan ciri barang cukup jelas.</p>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                 <div class="form-intro">
                     <span class="form-intro-icon"><i class="fa-solid fa-clipboard-list"></i></span>
                     <div>
-                        <h2>Detail laporan barang</h2>
+                        <h2 id="formTitle">Detail laporan barang</h2>
                         <p>Kolom bertanda <span class="required">*</span> wajib diisi.</p>
                     </div>
                 </div>
@@ -80,17 +80,13 @@
                     <div class="field">
                         <label for="lap_tipe">Jenis laporan <span class="required">*</span></label>
                         <select id="lap_tipe" name="tipe" required>
-                            <option value="Kehilangan">Saya kehilangan barang</option>
+                            <option value="Hilang">Saya kehilangan barang</option>
                             <option value="Ditemukan">Saya menemukan barang</option>
                         </select>
                     </div>
                     <div class="field">
                         <label for="lap_kategori">Kategori barang <span class="required">*</span></label>
-                        <select id="lap_kategori" name="kategori" required>
-                            <option value="Dokumen">Dokumen / kartu identitas</option>
-                            <option value="Elektronik">Elektronik</option>
-                            <option value="Aksesoris">Aksesori / barang lainnya</option>
-                        </select>
+                        <select id="lap_kategori" name="kategori" required></select>
                     </div>
                     <div class="field full">
                         <label for="lap_nama">Nama atau identitas barang <span class="required">*</span></label>
@@ -103,6 +99,15 @@
                     <div class="field">
                         <label for="lap_tanggal">Tanggal kejadian <span class="required">*</span></label>
                         <input type="date" id="lap_tanggal" name="tanggal" required>
+                    </div>
+                    <div class="field">
+                        <label for="lap_kontak">Kontak yang dapat dihubungi <span class="required">*</span></label>
+                        <input type="text" id="lap_kontak" name="kontak" placeholder="08xxxxxxxxxx atau email" maxlength="50" required>
+                        <div class="field-hint">Nomor HP (08xx / +62xx) atau alamat email.</div>
+                    </div>
+                    <div class="field" id="fieldPelapor" hidden>
+                        <label for="lap_pelapor">Pelapor (petugas)</label>
+                        <select id="lap_pelapor"></select>
                     </div>
                     <div class="field full">
                         <label for="lap_ciri">Deskripsi dan ciri fisik <span class="required">*</span></label>
@@ -132,27 +137,5 @@
 </div>
 
 <script src="../js/PBL.js"></script>
-<script>
-    const user = JSON.parse(sessionStorage.getItem('activeUser') || 'null');
-    if (!user || user.role !== 'mahasiswa') window.location.replace('login.html');
-    const dateField = document.getElementById('lap_tanggal');
-    if (dateField && !dateField.value) {
-        const d = new Date();
-        dateField.value = [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-');
-    }
-    const fileField = document.getElementById('lap_foto');
-    if (fileField) {
-        fileField.addEventListener('change', () => {
-            const fn = document.getElementById('fileName');
-            if (fn) fn.textContent = fileField.files?.[0]?.name || 'Pilih foto atau seret file ke area ini';
-        });
-    }
-    const hs = document.getElementById('headerSearch');
-    if (hs) {
-        hs.addEventListener('input', e => {
-            if (e.target.value.trim()) window.location.href = 'daftar-laporan.html?q=' + encodeURIComponent(e.target.value.trim());
-        });
-    }
-</script>
 </body>
 </html>

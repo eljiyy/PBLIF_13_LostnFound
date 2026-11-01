@@ -128,6 +128,7 @@
         </div>
     </div>
 
+    <script src="../js/PBL.js"></script>
     <script>
         let currentMode = 'login';
         let otpRahasia = "123456"; 
@@ -203,7 +204,8 @@
                 }
                 const student = users.find(u => u.nim === nimInput && u.password === passwordInput);
                 if (student) {
-                    sessionStorage.setItem('activeUser', JSON.stringify({ nama: student.nama, nim: student.nim, role: 'mahasiswa' }));
+                    sessionStorage.setItem('activeUser', JSON.stringify({ nama: student.nama, nim: student.nim, nohp: student.nohp, role: 'mahasiswa' }));
+                    Pelapor.ensure({ nama: student.nama, nim: student.nim, nohp: student.nohp, role: 'mahasiswa' });
                     window.location.href = 'PBL.html';
                 } else {
                     showAlert('NIM atau Password tidak cocok.');

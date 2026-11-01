@@ -36,7 +36,7 @@
             <div class="top-actions">
                 <label class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="search" id="headerSearch" placeholder="Cari di halaman..." aria-label="Cari di halaman">
+                    <input type="search" id="headerSearch" placeholder="Cari barang, tekan Enter..." aria-label="Cari di halaman">
                 </label>
                 <a class="icon-button" href="kontak.html" title="Pusat bantuan" aria-label="Pusat bantuan"><i class="fa-regular fa-bell"></i></a>
                 <a class="user-chip" href="login.html" onclick="sessionStorage.removeItem('activeUser')" title="Keluar dari akun">
@@ -52,122 +52,49 @@
         <div class="page-content">
             <div class="page-top-row">
                 <div>
-                    <div class="eyebrow">Analytics dashboard</div>
+                    <div class="eyebrow">Laporan petugas</div>
                     <h2 class="page-title">Rekapitulasi laporan</h2>
-                    <p class="page-subtitle">Angka di bawah dihitung langsung dari data laporan yang tersimpan pada browser ini.</p>
+                    <p class="page-subtitle">Semua angka dihitung dari data laporan, mengikuti filter periode dan kategori.</p>
                 </div>
-                <a href="daftar-laporan.html" class="button button-secondary"><i class="fa-solid fa-arrow-up-right-from-square"></i> Buka database</a>
+                <a href="daftar-laporan.html" class="button button-secondary"><i class="fa-solid fa-box-open"></i> Buka database</a>
             </div>
 
+            <section class="panel filter-bar filter-bar--rekap" aria-label="Filter rekap">
+                <select id="rkPeriode" aria-label="Periode cepat">
+                    <option value="90" selected>90 hari terakhir</option><option value="30">30 hari terakhir</option><option value="7">7 hari terakhir</option><option value="0">Semua waktu</option>
+                </select>
+                <label class="filter-date">Dari <input type="date" id="rkFrom"></label>
+                <label class="filter-date">Sampai <input type="date" id="rkTo"></label>
+                <select id="rkKategori" aria-label="Kategori"></select>
+                <select id="rkStatus" aria-label="Status">
+                    <option value="">Semua status</option><option>Aktif</option><option>Cocok</option><option>Dikembalikan</option><option>Ditutup</option>
+                </select>
+            </section>
+
             <section class="metric-grid">
-                <article class="panel metric-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Barang hilang</span>
-                        <span class="stat-icon orange"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    </div>
-                    <div class="metric-value" id="totalHilang">0</div>
-                    <div class="metric-caption">Total laporan kehilangan</div>
-                </article>
-                <article class="panel metric-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Barang ditemukan</span>
-                        <span class="stat-icon green"><i class="fa-solid fa-box-open"></i></span>
-                    </div>
-                    <div class="metric-value" id="totalDitemukan">0</div>
-                    <div class="metric-caption">Total laporan penemuan</div>
-                </article>
-                <article class="panel metric-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Kasus selesai</span>
-                        <span class="stat-icon blue"><i class="fa-solid fa-circle-check"></i></span>
-                    </div>
-                    <div class="metric-value" id="totalSelesai">0</div>
-                    <div class="metric-caption">Laporan berstatus selesai</div>
-                </article>
-                <article class="panel metric-card">
-                    <div class="stat-top">
-                        <span class="stat-label">Menunggu validasi</span>
-                        <span class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></span>
-                    </div>
-                    <div class="metric-value" id="totalPending">0</div>
-                    <div class="metric-caption">Laporan belum dipublikasikan</div>
-                </article>
+                <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Laporan hilang</span><span class="stat-icon orange"><i class="fa-solid fa-magnifying-glass"></i></span></div><div class="metric-value" id="totalHilang">0</div></article>
+                <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Barang ditemukan</span><span class="stat-icon blue"><i class="fa-solid fa-box-open"></i></span></div><div class="metric-value" id="totalDitemukan">0</div></article>
+                <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Terselesaikan</span><span class="stat-icon green"><i class="fa-solid fa-circle-check"></i></span></div><div class="metric-value" id="totalSelesai">0</div><p class="metric-caption" id="rateSelesai"></p></article>
+                <article class="panel metric-card"><div class="stat-top"><span class="stat-label">Masih aktif</span><span class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></span></div><div class="metric-value" id="totalAktif">0</div></article>
             </section>
 
             <section class="analytics-grid">
                 <article class="panel analytics-panel">
-                    <h3>Distribusi status laporan</h3>
-                    <p>Persentase terhadap total laporan yang tersimpan.</p>
-                    <div class="analytics-rows">
-                        <div>
-                            <div class="analytics-row-head">
-                                <span>Menunggu validasi</span>
-                                <span id="valuePending">0 laporan · 0%</span>
-                            </div>
-                            <div class="analytics-track"><span class="orange" id="barPending"></span></div>
-                        </div>
-                        <div>
-                            <div class="analytics-row-head">
-                                <span>Terverifikasi</span>
-                                <span id="valueValid">0 laporan · 0%</span>
-                            </div>
-                            <div class="analytics-track"><span id="barValid"></span></div>
-                        </div>
-                        <div>
-                            <div class="analytics-row-head">
-                                <span>Kasus selesai</span>
-                                <span id="valueSelesai">0 laporan · 0%</span>
-                            </div>
-                            <div class="analytics-track"><span class="green" id="barSelesai"></span></div>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:23px;padding-top:16px">
-                        <span style="font-size:10px;color:var(--muted)">Total data terhitung</span>
-                        <strong id="totalSemua" style="font-family:'Inter';font-size:17px">0 laporan</strong>
-                    </div>
+                    <h3>Status penyelesaian</h3>
+                    <p>Aktif, Cocok, Dikembalikan, dan Ditutup terhadap total laporan.</p>
+                    <div class="analytics-rows" id="statusRows"></div>
+                    <div class="total-line"><span>Total laporan terhitung</span><strong id="totalSemua">0 laporan</strong></div>
                 </article>
-
-                <article class="panel analytics-panel">
-                    <h3>Alur penanganan</h3>
-                    <p>Urutan proses laporan pada sistem FindIt.</p>
-                    <div class="process-list">
-                        <div class="process-item">
-                            <span class="process-num">01</span>
-                            <div>
-                                <h4>Mahasiswa mengirim laporan</h4>
-                                <p>Identitas barang, lokasi, tanggal, ciri fisik, dan foto opsional dicatat.</p>
-                            </div>
-                        </div>
-                        <div class="process-item">
-                            <span class="process-num">02</span>
-                            <div>
-                                <h4>Admin melakukan validasi</h4>
-                                <p>Laporan masuk ke antrean dan belum tampil di database publik sebelum diperiksa.</p>
-                            </div>
-                        </div>
-                        <div class="process-item">
-                            <span class="process-num">03</span>
-                            <div>
-                                <h4>Status diperbarui</h4>
-                                <p>Laporan terverifikasi dipublikasikan. Kasus dapat ditandai selesai setelah penanganan.</p>
-                            </div>
-                        </div>
-                    </div>
-                </article>
+                <article class="panel analytics-panel"><h3>Rekap per kategori</h3><p>Jumlah laporan Hilang dan Ditemukan.</p><div id="tblKategori"></div></article>
             </section>
+
+            <section class="panel"><div class="panel-heading"><div><h3>Rekap per lokasi</h3><p>Lokasi dengan laporan terbanyak pada periode terpilih.</p></div></div><div id="tblLokasi" class="table-wrap"></div></section>
+            <section class="panel"><div class="panel-heading"><div><h3>Daftar laporan pada periode ini</h3><p>Klik nama barang untuk membuka detail.</p></div></div><div id="tblDaftar" class="table-wrap"></div></section>
         </div>
         <footer class="footer-note">FindIt · Sistem Informasi Barang Hilang dan Temuan Kampus<br>Politeknik Negeri Batam · PBL</footer>
     </main>
 </div>
 
 <script src="../js/PBL.js"></script>
-<script>
-    const hs = document.getElementById('headerSearch');
-    if (hs) {
-        hs.addEventListener('input', e => {
-            if (e.target.value.trim()) window.location.href = 'daftar-laporan.html?q=' + encodeURIComponent(e.target.value.trim());
-        });
-    }
-</script>
 </body>
 </html>
